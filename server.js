@@ -1025,42 +1025,35 @@ function generateEmailHTML(data, dadosCNPJ = null, downloadLink = null, files = 
                 </div>
                 
                 <!-- Seção Administrativa -->
-                <div style="background: linear-gradient(135deg, #f8fafc, #e2e8f0); padding: 30px; border-radius: 15px; margin: 30px 0; text-align: center; border: 2px solid #e2e8f0;">
-                    <h3 style="margin: 0 0 15px 0; color: #1e40af; font-size: 22px; font-weight: bold;">🔧 Área Administrativa - Aporte Capital</h3>
-                    <p style="margin: 0 0 25px 0; color: #64748b; font-size: 16px;">Acesse o dashboard para consultas detalhadas de CNPJ e análises de score em tempo real</p>
+                <div style="background: linear-gradient(135deg, #1e40af, #3b82f6); color: white; padding: 25px; border-radius: 12px; margin: 30px 0; text-align: center;">
+                    <h3 style="margin: 0 0 15px 0; color: #1e40af;">🔧 Área Administrativa - Aporte Capital</h3>
+                    <p style="margin: 0 0 20px 0; color: #1e40af; opacity: 0.9;">Acesse o dashboard para consultas detalhadas de CNPJ e análises de score</p>
                     
                     <div style="text-align: center; margin: 25px 0;">
                         <a href="${process.env.BASE_URL || 'http://localhost:3001'}/dashboard" 
-                           style="background: #1e40af; 
+                           style="background: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%); 
                                   color: #ffffff; 
-                                  padding: 20px 50px; 
+                                  padding: 18px 40px; 
                                   text-decoration: none; 
-                                  border-radius: 10px; 
+                                  border-radius: 12px; 
                                   display: inline-block; 
                                   font-weight: bold; 
-                                  font-size: 18px;
-                                  box-shadow: 0 10px 25px rgba(30, 64, 175, 0.4);
-                                  border: none;
+                                  font-size: 16px;
+                                  box-shadow: 0 8px 20px rgba(30, 64, 175, 0.3);
+                                  border: 2px solid transparent;
                                   transition: all 0.3s ease;
                                   text-transform: uppercase;
-                                  letter-spacing: 1px;
-                                  min-width: 300px;">
-                            📊 ACESSAR DASHBOARD
+                                  letter-spacing: 0.5px;">
+                            📊 Acessar Dashboard Administrativo
                         </a>
                     </div>
                     
-                    <div style="margin-top: 25px; font-size: 14px; color: #64748b;">
-                        <div style="margin-bottom: 15px;"><span style="color: #1e40af;">🔍</span> <strong style="color: #1e40af;">Funcionalidades disponíveis no dashboard:</strong></div>
-                        <div style="display: flex; justify-content: center; flex-wrap: wrap; gap: 12px; margin-top: 15px;">
-                            <span style="background: #1e40af; color: #ffffff; padding: 10px 18px; border-radius: 25px; font-size: 13px; font-weight: 600; box-shadow: 0 4px 8px rgba(30, 64, 175, 0.2);">✅ Consulta manual de CNPJ</span>
-                            <span style="background: #1e40af; color: #ffffff; padding: 10px 18px; border-radius: 25px; font-size: 13px; font-weight: 600; box-shadow: 0 4px 8px rgba(30, 64, 175, 0.2);">📊 Análise de score automática</span>
-                            <span style="background: #1e40af; color: #ffffff; padding: 10px 18px; border-radius: 25px; font-size: 13px; font-weight: 600; box-shadow: 0 4px 8px rgba(30, 64, 175, 0.2);">📋 Relatórios detalhados</span>
-                        </div>
-                        
-                        <div style="margin-top: 20px; padding: 15px; background: #dbeafe; border-radius: 8px; border-left: 4px solid #1e40af;">
-                            <p style="margin: 0; color: #1e40af; font-weight: 600; font-size: 14px;">
-                                💡 <strong>Dica:</strong> Use o dashboard para avaliar rapidamente a viabilidade de crédito de cada cliente
-                            </p>
+                    <div style="margin-top: 20px; font-size: 14px; color: #1e40af;">
+                        <div style="margin-bottom: 8px; color: #1e40af;"><span style="color: #1e40af;">🔍</span> <strong>Funcionalidades disponíveis:</strong></div>
+                        <div style="display: flex; justify-content: center; flex-wrap: wrap; gap: 15px; margin-top: 10px;">
+                            <span style="background: #ffffff; color: #1e40af; padding: 8px 15px; border-radius: 20px; font-size: 13px; font-weight: 600; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">✅ Consulta manual de CNPJ</span>
+                            <span style="background: #ffffff; color: #1e40af; padding: 8px 15px; border-radius: 20px; font-size: 13px; font-weight: 600; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">📊 Análise de score em tempo real</span>
+                            <span style="background: #ffffff; color: #1e40af; padding: 8px 15px; border-radius: 20px; font-size: 13px; font-weight: 600; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">📋 Relatórios detalhados</span>
                         </div>
                     </div>
                 </div>
