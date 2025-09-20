@@ -1303,7 +1303,7 @@ const ConsultoriaModal = {
     getBackendUrl() {
         // Se estiver rodando localmente com o servidor Node.js
         if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
-            return 'http://localhost:3002';
+            return 'http://localhost:3001';
         }
         
         // Se estiver em produção no Vercel, usa as Serverless Functions

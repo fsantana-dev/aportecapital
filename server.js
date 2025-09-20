@@ -358,6 +358,208 @@ function normalizarDadosCNPJ(data, apiName) {
     }
 }
 
+/**
+ * Calcula um score estimado baseado em dados públicos do CNPJ
+ * @param {Object} dadosCNPJ - Dados normalizados do CNPJ
+ * @returns {Object} Score estimado com detalhes
+ */
+function calcularScoreEstimado(dadosCNPJ) {
+    try {
+        if (!dadosCNPJ || !dadosCNPJ.success) {
+            return {
+                score: 0,
+                classificacao: 'Indisponível',
+                fatores: ['Dados do CNPJ não disponíveis'],
+                detalhes: {
+                    situacao: 0,
+                    tempo_atividade: 0,
+                    capital_social: 0,
+                    atividade_principal: 0,
+                    endereco: 0
+                }
+            };
+        }
+
+        let pontuacao = 0;
+        const fatores = [];
+        const detalhes = {
+            situacao: 0,
+            tempo_atividade: 0,
+            capital_social: 0,
+            atividade_principal: 0,
+            endereco: 0
+        };
+
+        // 1. Situação Cadastral (peso: 30 pontos)
+        if (dadosCNPJ.situacao) {
+            const situacao = dadosCNPJ.situacao.toLowerCase();
+            if (situacao.includes('ativa')) {
+                pontuacao += 30;
+                detalhes.situacao = 30;
+                fatores.push('✅ Situação cadastral ativa');
+            } else if (situacao.includes('suspensa')) {
+                pontuacao += 10;
+                detalhes.situacao = 10;
+                fatores.push('⚠️ Situação cadastral suspensa');
+            } else {
+                fatores.push('❌ Situação cadastral irregular');
+            }
+        }
+
+        // 2. Tempo de Atividade (peso: 25 pontos)
+        if (dadosCNPJ.dataAbertura) {
+            const dataAbertura = new Date(dadosCNPJ.dataAbertura);
+            const hoje = new Date();
+            const anosAtividade = (hoje - dataAbertura) / (1000 * 60 * 60 * 24 * 365);
+            
+            if (anosAtividade >= 5) {
+                pontuacao += 25;
+                detalhes.tempo_atividade = 25;
+                fatores.push(`✅ Empresa com ${Math.floor(anosAtividade)} anos de atividade`);
+            } else if (anosAtividade >= 2) {
+                pontuacao += 15;
+                detalhes.tempo_atividade = 15;
+                fatores.push(`⚠️ Empresa com ${Math.floor(anosAtividade)} anos de atividade`);
+            } else if (anosAtividade >= 1) {
+                pontuacao += 8;
+                detalhes.tempo_atividade = 8;
+                fatores.push(`⚠️ Empresa nova (${Math.floor(anosAtividade)} ano)`);
+            } else {
+                fatores.push('❌ Empresa muito recente (menos de 1 ano)');
+            }
+        }
+
+        // 3. Capital Social (peso: 20 pontos)
+        if (dadosCNPJ.capitalSocial) {
+            const capital = parseFloat(dadosCNPJ.capitalSocial.toString().replace(/[^\d,]/g, '').replace(',', '.'));
+            
+            if (capital >= 1000000) { // 1 milhão ou mais
+                pontuacao += 20;
+                detalhes.capital_social = 20;
+                fatores.push('✅ Capital social elevado (R$ 1M+)');
+            } else if (capital >= 100000) { // 100 mil ou mais
+                pontuacao += 15;
+                detalhes.capital_social = 15;
+                fatores.push('✅ Capital social adequado (R$ 100K+)');
+            } else if (capital >= 10000) { // 10 mil ou mais
+                pontuacao += 10;
+                detalhes.capital_social = 10;
+                fatores.push('⚠️ Capital social moderado (R$ 10K+)');
+            } else if (capital > 0) {
+                pontuacao += 5;
+                detalhes.capital_social = 5;
+                fatores.push('⚠️ Capital social baixo');
+            } else {
+                fatores.push('❌ Capital social não informado');
+            }
+        }
+
+        // 4. Atividade Principal (peso: 15 pontos)
+        if (dadosCNPJ.atividadePrincipal) {
+            const atividade = dadosCNPJ.atividadePrincipal.toLowerCase();
+            
+            // Atividades consideradas de baixo risco
+            const atividadesBaixoRisco = [
+                'consultoria', 'tecnologia', 'software', 'educação', 'saúde',
+                'engenharia', 'arquitetura', 'advocacia', 'contabilidade'
+            ];
+            
+            // Atividades consideradas de médio risco
+            const atividadesMedioRisco = [
+                'comércio', 'varejo', 'atacado', 'indústria', 'construção',
+                'transporte', 'logística', 'alimentação'
+            ];
+            
+            if (atividadesBaixoRisco.some(palavra => atividade.includes(palavra))) {
+                pontuacao += 15;
+                detalhes.atividade_principal = 15;
+                fatores.push('✅ Atividade de baixo risco');
+            } else if (atividadesMedioRisco.some(palavra => atividade.includes(palavra))) {
+                pontuacao += 10;
+                detalhes.atividade_principal = 10;
+                fatores.push('⚠️ Atividade de médio risco');
+            } else {
+                pontuacao += 5;
+                detalhes.atividade_principal = 5;
+                fatores.push('⚠️ Atividade requer análise específica');
+            }
+        }
+
+        // 5. Endereço Completo (peso: 10 pontos)
+        if (dadosCNPJ.endereco && dadosCNPJ.endereco.logradouro && dadosCNPJ.endereco.cep) {
+            pontuacao += 10;
+            detalhes.endereco = 10;
+            fatores.push('✅ Endereço completo informado');
+        } else if (dadosCNPJ.endereco && dadosCNPJ.endereco.logradouro) {
+            pontuacao += 5;
+            detalhes.endereco = 5;
+            fatores.push('⚠️ Endereço parcialmente informado');
+        } else {
+            fatores.push('❌ Endereço incompleto');
+        }
+
+        // Determinar classificação
+        let classificacao;
+        let cor;
+        if (pontuacao >= 80) {
+            classificacao = 'Excelente';
+            cor = '#28a745'; // Verde
+        } else if (pontuacao >= 60) {
+            classificacao = 'Bom';
+            cor = '#17a2b8'; // Azul
+        } else if (pontuacao >= 40) {
+            classificacao = 'Regular';
+            cor = '#ffc107'; // Amarelo
+        } else if (pontuacao >= 20) {
+            classificacao = 'Baixo';
+            cor = '#fd7e14'; // Laranja
+        } else {
+            classificacao = 'Crítico';
+            cor = '#dc3545'; // Vermelho
+        }
+
+        return {
+            score: pontuacao,
+            classificacao,
+            cor,
+            fatores,
+            detalhes,
+            recomendacao: gerarRecomendacao(pontuacao, classificacao),
+            calculadoEm: new Date().toISOString()
+        };
+
+    } catch (error) {
+        console.error('Erro ao calcular score:', error);
+        return {
+            score: 0,
+            classificacao: 'Erro',
+            fatores: ['Erro no cálculo do score'],
+            detalhes: {},
+            erro: error.message
+        };
+    }
+}
+
+/**
+ * Gera recomendação baseada no score
+ * @param {number} pontuacao - Pontuação obtida
+ * @param {string} classificacao - Classificação do score
+ * @returns {string} Recomendação
+ */
+function gerarRecomendacao(pontuacao, classificacao) {
+    if (pontuacao >= 80) {
+        return 'Cliente com excelente perfil. Recomendado para aprovação com condições preferenciais.';
+    } else if (pontuacao >= 60) {
+        return 'Cliente com bom perfil. Recomendado para aprovação com condições padrão.';
+    } else if (pontuacao >= 40) {
+        return 'Cliente com perfil regular. Recomenda-se análise adicional e condições restritivas.';
+    } else if (pontuacao >= 20) {
+        return 'Cliente com perfil de risco. Recomenda-se análise criteriosa e garantias adicionais.';
+    } else {
+        return 'Cliente com perfil crítico. Não recomendado para aprovação sem análise presencial detalhada.';
+    }
+}
+
 // ===== CONFIGURAÇÕES =====
 const app = express();
 const PORT = process.env.PORT || 10000;
@@ -513,7 +715,7 @@ function validateFormData(data) {
  * @param {Object} data - Dados do formulário
  * @returns {string} - HTML do email
  */
-function generateEmailHTML(data, dadosCNPJ = null, downloadLink = null, files = null) {
+function generateEmailHTML(data, dadosCNPJ = null, downloadLink = null, files = null, scoreEstimado = null) {
     // Gera seção de dados do CNPJ se disponível
     const secaoCNPJ = dadosCNPJ && dadosCNPJ.success ? `
         <h2 style="color: #059669; border-bottom: 2px solid #059669; padding-bottom: 10px;">📊 DADOS OFICIAIS DO CNPJ</h2>
@@ -577,16 +779,18 @@ function generateEmailHTML(data, dadosCNPJ = null, downloadLink = null, files = 
         </div>
         ` : ''}
         
+        ${dadosCNPJ.endereco ? `
         <h3 style="color: #0369a1; margin-top: 25px;">📍 Endereço Oficial</h3>
         <div class="field">
             <div class="label">🏠 Endereço Completo:</div>
             <div class="value">
-                ${dadosCNPJ.endereco.logradouro} ${dadosCNPJ.endereco.numero}
+                ${dadosCNPJ.endereco.logradouro || 'Não informado'} ${dadosCNPJ.endereco.numero || ''}
                 ${dadosCNPJ.endereco.complemento ? `, ${dadosCNPJ.endereco.complemento}` : ''}
-                <br>${dadosCNPJ.endereco.bairro} - ${dadosCNPJ.endereco.municipio}/${dadosCNPJ.endereco.uf}
-                <br>CEP: ${dadosCNPJ.endereco.cep}
+                <br>${dadosCNPJ.endereco.bairro || 'Não informado'} - ${dadosCNPJ.endereco.municipio || 'Não informado'}/${dadosCNPJ.endereco.uf || 'Não informado'}
+                <br>CEP: ${dadosCNPJ.endereco.cep || 'Não informado'}
             </div>
         </div>
+        ` : ''}
         
         ${dadosCNPJ.telefone || dadosCNPJ.email ? `
         <h3 style="color: #0369a1; margin-top: 25px;">📞 Contatos Oficiais</h3>
@@ -712,6 +916,50 @@ function generateEmailHTML(data, dadosCNPJ = null, downloadLink = null, files = 
                     
                     ${secaoCNPJ}
                     
+                    ${scoreEstimado ? `
+                    <h2 style="color: #7c3aed; border-bottom: 2px solid #7c3aed; padding-bottom: 10px;">📊 AVALIAÇÃO PRELIMINAR</h2>
+                    <div style="background: linear-gradient(135deg, #f3f4f6 0%, #e5e7eb 100%); padding: 20px; border-radius: 12px; margin-bottom: 20px; border: 1px solid #d1d5db;">
+                        <div style="text-align: center; margin-bottom: 20px;">
+                            <div style="display: inline-block; background: ${scoreEstimado.cor}; color: white; padding: 15px 30px; border-radius: 50px; font-size: 24px; font-weight: bold; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+                                ${scoreEstimado.score}/100
+                            </div>
+                            <div style="margin-top: 10px; font-size: 18px; font-weight: bold; color: ${scoreEstimado.cor};">
+                                ${scoreEstimado.classificacao}
+                            </div>
+                        </div>
+                        
+                        <div style="background: white; padding: 15px; border-radius: 8px; margin-bottom: 15px;">
+                            <h4 style="margin: 0 0 10px 0; color: #374151;">🎯 Recomendação:</h4>
+                            <p style="margin: 0; color: #6b7280; font-style: italic;">${scoreEstimado.recomendacao}</p>
+                        </div>
+                        
+                        <div style="background: white; padding: 15px; border-radius: 8px; margin-bottom: 15px;">
+                            <h4 style="margin: 0 0 10px 0; color: #374151;">📋 Fatores Analisados:</h4>
+                            <div style="color: #6b7280;">
+                                ${scoreEstimado.fatores.map(fator => `<div style="margin-bottom: 5px;">• ${fator}</div>`).join('')}
+                            </div>
+                        </div>
+                        
+                        <div style="background: white; padding: 15px; border-radius: 8px;">
+                            <h4 style="margin: 0 0 10px 0; color: #374151;">📊 Detalhamento da Pontuação:</h4>
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; font-size: 14px;">
+                                <div>• Situação Cadastral: <strong>${scoreEstimado.detalhes.situacao}/30</strong></div>
+                                <div>• Tempo de Atividade: <strong>${scoreEstimado.detalhes.tempo_atividade}/25</strong></div>
+                                <div>• Capital Social: <strong>${scoreEstimado.detalhes.capital_social}/20</strong></div>
+                                <div>• Atividade Principal: <strong>${scoreEstimado.detalhes.atividade_principal}/15</strong></div>
+                                <div>• Endereço Completo: <strong>${scoreEstimado.detalhes.endereco}/10</strong></div>
+                                <div style="grid-column: 1 / -1; text-align: center; margin-top: 10px; padding-top: 10px; border-top: 1px solid #e5e7eb;">
+                                    <strong style="color: ${scoreEstimado.cor};">Total: ${scoreEstimado.score}/100</strong>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div style="text-align: center; margin-top: 15px; font-size: 12px; color: #9ca3af;">
+                            Avaliação calculada em: ${new Date(scoreEstimado.calculadoEm).toLocaleString('pt-BR')}
+                        </div>
+                    </div>
+                    ` : ''}
+                    
                     <h2>Detalhes da Consultoria</h2>
                     
                     <div class="field">
@@ -776,6 +1024,26 @@ function generateEmailHTML(data, dadosCNPJ = null, downloadLink = null, files = 
                     ` : ''}
                 </div>
                 
+                <!-- Seção Administrativa -->
+                <div style="background: linear-gradient(135deg, #1e40af, #3b82f6); color: white; padding: 25px; border-radius: 12px; margin: 30px 0; text-align: center;">
+                    <h3 style="margin: 0 0 15px 0; color: #1e40af;">🔧 Área Administrativa - Aporte Capital</h3>
+                    <p style="margin: 0 0 20px 0; color: #1e40af; opacity: 0.9;">Acesse o dashboard para consultas detalhadas de CNPJ e análises de score</p>
+                    
+                    <a href="${process.env.BASE_URL || 'http://localhost:3001'}/dashboard" 
+                       style="background: #ffffff; color: #1e40af; padding: 15px 30px; text-decoration: none; border-radius: 8px; display: inline-block; font-weight: bold; margin: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+                        📊 Acessar Dashboard Administrativo
+                    </a>
+                    
+                    <div style="margin-top: 20px; font-size: 14px; color: #1e40af;">
+                        <div style="margin-bottom: 8px; color: #1e40af;"><span style="color: #1e40af;">🔍</span> <strong>Funcionalidades disponíveis:</strong></div>
+                        <div style="display: flex; justify-content: center; flex-wrap: wrap; gap: 15px; margin-top: 10px;">
+                            <span style="background: #ffffff; color: #1e40af; padding: 8px 15px; border-radius: 20px; font-size: 13px; font-weight: 600; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">✅ Consulta manual de CNPJ</span>
+                            <span style="background: #ffffff; color: #1e40af; padding: 8px 15px; border-radius: 20px; font-size: 13px; font-weight: 600; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">📊 Análise de score em tempo real</span>
+                            <span style="background: #ffffff; color: #1e40af; padding: 8px 15px; border-radius: 20px; font-size: 13px; font-weight: 600; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">📋 Relatórios detalhados</span>
+                        </div>
+                    </div>
+                </div>
+
                 <div class="footer">
                     <p>Esta solicitação foi enviada através do formulário de consultoria do site.</p>
                     <p>Data: ${new Date().toLocaleString('pt-BR')}</p>
@@ -1180,16 +1448,24 @@ app.post('/api/consultoria', upload.array('documentos', 5), async (req, res) => 
             });
         }
         
-        // Consulta dados oficiais do CNPJ
+        // Consulta dados oficiais do CNPJ e calcula score
         let dadosCNPJ = null;
+        let scoreEstimado = null;
         if (req.body.cnpj) {
             console.log('Iniciando consulta do CNPJ...');
             try {
                 dadosCNPJ = await consultarCNPJ(req.body.cnpj);
                 if (dadosCNPJ.success) {
                     console.log('✅ CNPJ consultado com sucesso:', dadosCNPJ.razaoSocial);
+                    
+                    // Calcula score estimado baseado nos dados do CNPJ
+                    console.log('📊 Calculando score estimado...');
+                    scoreEstimado = calcularScoreEstimado(dadosCNPJ);
+                    console.log(`📊 Score calculado: ${scoreEstimado.score}/100 - ${scoreEstimado.classificacao}`);
                 } else {
                     console.log('⚠️ Erro na consulta do CNPJ:', dadosCNPJ.error);
+                    // Calcula score com dados limitados
+                    scoreEstimado = calcularScoreEstimado(null);
                 }
             } catch (error) {
                 console.error('❌ Erro ao consultar CNPJ:', error);
@@ -1199,6 +1475,7 @@ app.post('/api/consultoria', upload.array('documentos', 5), async (req, res) => 
                     source: 'erro_interno',
                     consultedAt: new Date().toISOString()
                 };
+                scoreEstimado = calcularScoreEstimado(null);
             }
         }
         
@@ -1228,7 +1505,7 @@ app.post('/api/consultoria', upload.array('documentos', 5), async (req, res) => 
             // to: process.env.RECIPIENT_EMAIL || 'contato@aportecapitalcred.com.br', 
             to: process.env.RECIPIENT_EMAIL ,
             subject: `Nova Solicitação de Consultoria - ${req.body.empresa}${subjectSuffix}`,
-            html: generateEmailHTML(req.body, dadosCNPJ, downloadLink, req.files),
+            html: generateEmailHTML(req.body, dadosCNPJ, downloadLink, req.files, scoreEstimado),
             attachments: attachments
         };
         
@@ -1327,6 +1604,267 @@ app.use((error, req, res, next) => {
         success: false,
         message: 'Erro interno do servidor'
     });
+});
+
+/**
+ * Endpoint para consulta manual de CNPJ (Dashboard Administrativo)
+ */
+app.get('/api/consulta-cnpj/:cnpj', async (req, res) => {
+    try {
+        const cnpj = req.params.cnpj;
+        
+        // Valida formato básico do CNPJ
+        if (!cnpj || cnpj.length < 14) {
+            return res.status(400).json({
+                success: false,
+                message: 'CNPJ inválido'
+            });
+        }
+        
+        console.log(`📊 Consulta manual de CNPJ: ${cnpj}`);
+        
+        // Consulta dados do CNPJ
+        const dadosCNPJ = await consultarCNPJ(cnpj);
+        
+        // Calcula score estimado
+        const scoreEstimado = calcularScoreEstimado(dadosCNPJ);
+        
+        res.json({
+            success: true,
+            cnpj: cnpj,
+            dados: dadosCNPJ,
+            score: scoreEstimado,
+            consultadoEm: new Date().toISOString()
+        });
+        
+    } catch (error) {
+        console.error('Erro na consulta manual:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Erro interno do servidor',
+            error: process.env.NODE_ENV === 'development' ? error.message : undefined
+        });
+    }
+});
+
+/**
+ * Endpoint de teste para verificar email
+ */
+app.get('/test-email', (req, res) => {
+    const testData = {
+        nome: 'Teste Dashboard',
+        email: 'teste@teste.com',
+        telefone: '(11) 99999-9999',
+        empresa: 'Empresa Teste',
+        cnpj: '11.222.333/0001-81',
+        faturamento: '500k-1M',
+        tempo: '2-5-anos',
+        tipo: 'expansao',
+        descricao: 'Teste do dashboard'
+    };
+    
+    const testCNPJ = {
+        success: true,
+        nome: 'EMPRESA TESTE LTDA',
+        situacao: 'ATIVA',
+        cnpj: '11.222.333/0001-81',
+        abertura: '01/01/2020',
+        capital: '100000',
+        porte: 'PEQUENO',
+        natureza_juridica: 'SOCIEDADE EMPRESÁRIA LIMITADA',
+        telefone: '(11) 3333-4444',
+        email: 'contato@empresateste.com.br',
+        endereco: {
+            logradouro: 'RUA TESTE',
+            numero: '123',
+            complemento: 'SALA 1',
+            bairro: 'CENTRO',
+            municipio: 'SÃO PAULO',
+            uf: 'SP',
+            cep: '01000-000'
+        }
+    };
+    
+    const emailHTML = generateEmailHTML(testData, testCNPJ, null, null, 750);
+    res.send(emailHTML);
+});
+
+/**
+ * Página do Dashboard Administrativo
+ */
+app.get('/dashboard', (req, res) => {
+    res.send(`
+        <!DOCTYPE html>
+        <html lang="pt-BR">
+        <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>Dashboard - Aporte Capital</title>
+            <style>
+                * { margin: 0; padding: 0; box-sizing: border-box; }
+                body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f8fafc; }
+                .container { max-width: 1200px; margin: 0 auto; padding: 20px; }
+                .header { background: linear-gradient(135deg, #3b82f6, #1d4ed8); color: white; padding: 30px; border-radius: 12px; margin-bottom: 30px; text-align: center; }
+                .card { background: white; border-radius: 12px; padding: 25px; margin-bottom: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+                .form-group { margin-bottom: 20px; }
+                label { display: block; margin-bottom: 8px; font-weight: 600; color: #1f2937; font-size: 14px; }
+                input { width: 100%; padding: 12px; border: 2px solid #e5e7eb; border-radius: 8px; font-size: 16px; }
+                input:focus { outline: none; border-color: #3b82f6; }
+                .btn { background: #3b82f6; color: white; padding: 12px 24px; border: none; border-radius: 8px; cursor: pointer; font-size: 16px; font-weight: 600; }
+                .btn:hover { background: #2563eb; }
+                .btn:disabled { background: #9ca3af; cursor: not-allowed; }
+                .result { margin-top: 30px; }
+                .score-display { text-align: center; margin: 20px 0; }
+                .score-circle { display: inline-block; padding: 20px 40px; border-radius: 50px; color: white; font-size: 28px; font-weight: bold; }
+                .score-label { margin-top: 10px; font-size: 18px; font-weight: 600; }
+                .details-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; margin-top: 20px; }
+                .detail-card { background: #f9fafb; padding: 15px; border-radius: 8px; border-left: 4px solid #3b82f6; color: #374151; }
+                .detail-card p { color: #1f2937; margin: 5px 0; }
+                .detail-card strong { color: #1f2937; }
+                .loading { text-align: center; padding: 40px; color: #6b7280; }
+                .error { background: #fef2f2; color: #dc2626; padding: 15px; border-radius: 8px; border-left: 4px solid #dc2626; }
+                .success { background: #f0fdf4; color: #059669; padding: 15px; border-radius: 8px; border-left: 4px solid #059669; }
+                h2 { color: #1f2937; margin-bottom: 20px; font-size: 24px; }
+                h3 { color: #374151; margin: 25px 0 15px 0; font-size: 20px; }
+                h4 { color: #4b5563; margin-bottom: 8px; font-size: 16px; font-weight: 600; }
+            </style>
+        </head>
+        <body>
+            <div class="container">
+                <div class="header">
+                    <h1>📊 Dashboard Administrativo</h1>
+                    <p>Consulta e Avaliação de CNPJs</p>
+                </div>
+                
+                <div class="card">
+                    <h2>🔍 Consultar CNPJ</h2>
+                    <form id="consultaForm">
+                        <div class="form-group">
+                            <label for="cnpj">CNPJ:</label>
+                            <input type="text" id="cnpj" placeholder="00.000.000/0000-00" maxlength="18">
+                        </div>
+                        <button type="submit" class="btn" id="consultarBtn">Consultar</button>
+                    </form>
+                </div>
+                
+                <div id="resultado" class="result"></div>
+            </div>
+            
+            <script>
+                // Máscara para CNPJ
+                document.getElementById('cnpj').addEventListener('input', function(e) {
+                    let value = e.target.value.replace(/\\D/g, '');
+                    value = value.replace(/(\\d{2})(\\d)/, '$1.$2');
+                    value = value.replace(/(\\d{3})(\\d)/, '$1.$2');
+                    value = value.replace(/(\\d{3})(\\d)/, '$1/$2');
+                    value = value.replace(/(\\d{4})(\\d)/, '$1-$2');
+                    e.target.value = value;
+                });
+                
+                // Formulário de consulta
+                document.getElementById('consultaForm').addEventListener('submit', async function(e) {
+                    e.preventDefault();
+                    
+                    const cnpj = document.getElementById('cnpj').value.replace(/\\D/g, '');
+                    const btn = document.getElementById('consultarBtn');
+                    const resultado = document.getElementById('resultado');
+                    
+                    if (cnpj.length !== 14) {
+                        resultado.innerHTML = '<div class="error">CNPJ deve ter 14 dígitos</div>';
+                        return;
+                    }
+                    
+                    btn.disabled = true;
+                    btn.textContent = 'Consultando...';
+                    resultado.innerHTML = '<div class="loading">🔄 Consultando dados do CNPJ...</div>';
+                    
+                    try {
+                        const response = await fetch(\`/api/consulta-cnpj/\${cnpj}\`);
+                        const data = await response.json();
+                        
+                        if (data.success) {
+                            exibirResultado(data);
+                        } else {
+                            resultado.innerHTML = \`<div class="error">❌ \${data.message}</div>\`;
+                        }
+                    } catch (error) {
+                        resultado.innerHTML = '<div class="error">❌ Erro na consulta</div>';
+                    } finally {
+                        btn.disabled = false;
+                        btn.textContent = 'Consultar';
+                    }
+                });
+                
+                function exibirResultado(data) {
+                    const { dados, score } = data;
+                    
+                    let html = '<div class="card">';
+                    
+                    // Score
+                    html += \`
+                        <div class="score-display">
+                            <div class="score-circle" style="background: \${score.cor}">
+                                \${score.score}/100
+                            </div>
+                            <div class="score-label" style="color: \${score.cor}">
+                                \${score.classificacao}
+                            </div>
+                        </div>
+                        
+                        <div class="detail-card">
+                            <h4>🎯 Recomendação:</h4>
+                            <p>\${score.recomendacao}</p>
+                        </div>
+                    \`;
+                    
+                    if (dados.success) {
+                        html += \`
+                            <h3>📊 Dados da Empresa</h3>
+                            <div class="details-grid">
+                                <div class="detail-card">
+                                    <h4>🏢 Razão Social</h4>
+                                    <p>\${dados.razaoSocial}</p>
+                                </div>
+                                <div class="detail-card">
+                                    <h4>📋 Situação</h4>
+                                    <p>\${dados.situacao}</p>
+                                </div>
+                                <div class="detail-card">
+                                    <h4>📅 Data Abertura</h4>
+                                    <p>\${dados.dataAbertura}</p>
+                                </div>
+                                <div class="detail-card">
+                                    <h4>💰 Capital Social</h4>
+                                    <p>R$ \${dados.capitalSocial}</p>
+                                </div>
+                            </div>
+                        \`;
+                    }
+                    
+                    html += \`
+                        <h3>📋 Fatores Analisados</h3>
+                        <div class="detail-card">
+                            \${score.fatores.map(fator => \`<div>• \${fator}</div>\`).join('')}
+                        </div>
+                        
+                        <h3>📊 Detalhamento da Pontuação</h3>
+                        <div class="details-grid">
+                            <div class="detail-card">Situação Cadastral: <strong>\${score.detalhes.situacao}/30</strong></div>
+                            <div class="detail-card">Tempo de Atividade: <strong>\${score.detalhes.tempo_atividade}/25</strong></div>
+                            <div class="detail-card">Capital Social: <strong>\${score.detalhes.capital_social}/20</strong></div>
+                            <div class="detail-card">Atividade Principal: <strong>\${score.detalhes.atividade_principal}/15</strong></div>
+                            <div class="detail-card">Endereço Completo: <strong>\${score.detalhes.endereco}/10</strong></div>
+                        </div>
+                    \`;
+                    
+                    html += '</div>';
+                    
+                    document.getElementById('resultado').innerHTML = html;
+                }
+            </script>
+        </body>
+        </html>
+    `);
 });
 
 /**
