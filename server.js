@@ -1029,10 +1029,24 @@ function generateEmailHTML(data, dadosCNPJ = null, downloadLink = null, files = 
                     <h3 style="margin: 0 0 15px 0; color: #1e40af;">🔧 Área Administrativa - Aporte Capital</h3>
                     <p style="margin: 0 0 20px 0; color: #1e40af; opacity: 0.9;">Acesse o dashboard para consultas detalhadas de CNPJ e análises de score</p>
                     
-                    <a href="${process.env.BASE_URL || 'http://localhost:3001'}/dashboard" 
-                       style="background: #ffffff; color: #1e40af; padding: 15px 30px; text-decoration: none; border-radius: 8px; display: inline-block; font-weight: bold; margin: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
-                        📊 Acessar Dashboard Administrativo
-                    </a>
+                    <div style="text-align: center; margin: 25px 0;">
+                        <a href="${process.env.BASE_URL || 'http://localhost:3001'}/dashboard" 
+                           style="background: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%); 
+                                  color: #ffffff; 
+                                  padding: 18px 40px; 
+                                  text-decoration: none; 
+                                  border-radius: 12px; 
+                                  display: inline-block; 
+                                  font-weight: bold; 
+                                  font-size: 16px;
+                                  box-shadow: 0 8px 20px rgba(30, 64, 175, 0.3);
+                                  border: 2px solid transparent;
+                                  transition: all 0.3s ease;
+                                  text-transform: uppercase;
+                                  letter-spacing: 0.5px;">
+                            📊 Acessar Dashboard Administrativo
+                        </a>
+                    </div>
                     
                     <div style="margin-top: 20px; font-size: 14px; color: #1e40af;">
                         <div style="margin-bottom: 8px; color: #1e40af;"><span style="color: #1e40af;">🔍</span> <strong>Funcionalidades disponíveis:</strong></div>
@@ -1082,43 +1096,37 @@ function generateWhatsAppMessageForClient(data, files = null) {
     let documentosInfo = '';
     
     if (files && files.length > 0) {
-        documentosInfo = `📋 *DOCUMENTOS ENVIADOS:*
-✅ ${files.length} arquivo(s) enviado(s) por EMAIL
-✅ Solicitação enviada com sucesso!
-
-📧 Aguarde retorno da Aporte Capital
-🕐 Resposta em até 24 horas úteis`;
+        documentosInfo = `📋 *DOCUMENTOS:*
+✅ ${files.length} arquivo(s) enviados por email`;
     } else {
         documentosInfo = '📄 *DOCUMENTOS:* Nenhum documento anexado';
     }
 
-    const message = `🏢 *APORTE CAPITAL - Solicitação Enviada*
+    const message = `🏢 Olá, *Aporte Capital*!
 
-✅ *SUA SOLICITAÇÃO FOI ENVIADA COM SUCESSO!*
+Estou entrando em contato para solicitar uma análise de crédito e consultoria financeira.
 
-👤 *DADOS CONFIRMADOS:*
+👤 *MEUS DADOS:*
 • Nome: ${data.nomeCompleto}
 • Email: ${data.email}
 • Telefone: ${data.telefone}
 
-🏭 *EMPRESA:*
+🏭 *DADOS DA EMPRESA:*
 • Razão Social: ${data.empresa}
 • CNPJ: ${data.cnpj}
-• Faturamento: ${data.faturamentoAnual}
-• Tempo: ${data.tempoExistencia}
+• Faturamento Mensal: ${data.faturamentoAnual}
+• Tempo de Atividade: ${data.tempoExistencia}
 
-💼 *CONSULTORIA SOLICITADA:*
-• Tipo: ${data.tipoConsultoria}
-• Descrição: ${data.mensagem}
+💼 *TIPO DE CONSULTORIA:*
+• Modalidade: ${mapearTipoConsultoria(data.tipoConsultoria)}
+• Observações: ${data.mensagem}
 
 ${documentosInfo}
 
-🎯 *PRÓXIMOS PASSOS:*
-• Nossa equipe analisará sua solicitação
-• Entraremos em contato em breve
-• Mantenha seu WhatsApp ativo
+Aguardo retorno para darmos continuidade ao processo.
 
-Obrigado por escolher a Aporte Capital! 🚀`;
+Atenciosamente,
+*${data.nomeCompleto}*`;
 
     return message;
 }
@@ -1164,7 +1172,7 @@ function generateWhatsAppMessage(data, downloadLink = null, files = null) {
 • Tempo de Existência: ${data.tempoExistencia}
 
 💼 *TIPO DE CONSULTORIA:*
-• Serviço: ${data.tipoConsultoria}
+• Serviço: ${mapearTipoConsultoria(data.tipoConsultoria)}
 • Descrição: ${data.mensagem}
 
 ${documentosInfo}
@@ -1196,6 +1204,149 @@ function generateWhatsAppURL(phoneNumber, message) {
     const encodedMessage = encodeURIComponent(message);
     
     return `https://wa.me/${fullPhone}?text=${encodedMessage}`;
+}
+
+/**
+ * Mapeia valores do tipo de consultoria para exibição completa
+ * @param {string} tipoConsultoria - Valor do tipo de consultoria
+ * @returns {string} Texto completo do tipo de consultoria
+ */
+function mapearTipoConsultoria(tipoConsultoria) {
+    const mapeamento = {
+        'capital-giro': 'Capital de Giro',
+        'expansao': 'Expansão de Negócio',
+        'modernizacao': 'Modernização',
+        'investimento': 'Investimento em Equipamentos',
+        'outros': 'Outros'
+    };
+    
+    return mapeamento[tipoConsultoria] || tipoConsultoria;
+}
+
+/**
+ * Gera template de email de confirmação automático para o cliente
+ * @param {Object} data - Dados do formulário
+ * @param {Array} files - Arquivos enviados (opcional)
+ * @returns {string} HTML do email de confirmação
+ */
+function generateConfirmationEmailHTML(data, files = null) {
+    const currentDate = new Date().toLocaleDateString('pt-BR', {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+    });
+
+    let documentosInfo = '';
+    if (files && files.length > 0) {
+        documentosInfo = `
+        <div style="background-color: #e8f5e8; padding: 15px; border-radius: 8px; margin: 20px 0;">
+            <h3 style="color: #2e7d32; margin: 0 0 10px 0; font-size: 16px;">📋 Documentos Recebidos</h3>
+            <p style="margin: 0; color: #2e7d32;">✅ ${files.length} arquivo(s) anexado(s) com sucesso</p>
+        </div>`;
+    }
+
+    return `
+    <!DOCTYPE html>
+    <html lang="pt-BR">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Confirmação de Solicitação - Aporte Capital</title>
+    </head>
+    <body style="margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f5f5f5;">
+        <div style="max-width: 600px; margin: 0 auto; background-color: #ffffff; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">
+            
+            <!-- Header -->
+            <div style="background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%); padding: 30px; text-align: center;">
+                <h1 style="color: #ffffff; margin: 0; font-size: 28px; font-weight: 300; display: flex; align-items: center; justify-content: center; gap: 10px;">
+                    <img src="cid:logo" alt="Aporte Capital" style="height: 40px; margin-right: 10px; width: auto; vertical-align: middle;" />
+                    Aporte Capital
+                </h1>
+                <p style="color: #ffffff; margin: 10px 0 0 0; font-size: 16px; opacity: 0.9;">
+                    Consultoria Financeira Especializada
+                </p>
+            </div>
+
+            <!-- Content -->
+            <div style="padding: 40px 30px;">
+                
+                <!-- Success Message -->
+                <div style="text-align: center; margin-bottom: 30px;">
+                    <div style="background-color: #4caf50; color: white; padding: 15px; border-radius: 50px; display: inline-block; margin-bottom: 20px;">
+                        ✅ Solicitação Recebida com Sucesso!
+                    </div>
+                    <h2 style="color: #333; margin: 0; font-size: 24px;">Olá, ${data.nomeCompleto}!</h2>
+                    <p style="color: #666; margin: 10px 0 0 0; font-size: 16px;">
+                        Recebemos sua solicitação de consultoria financeira e nossa equipe já está analisando.
+                    </p>
+                </div>
+
+                <!-- Client Data Summary -->
+                <div style="background-color: #f8f9fa; padding: 25px; border-radius: 10px; margin: 25px 0;">
+                    <h3 style="color: #1e3c72; margin: 0 0 20px 0; font-size: 18px; border-bottom: 2px solid #1e3c72; padding-bottom: 10px;">
+                        📋 Resumo da Solicitação
+                    </h3>
+                    
+                    <div style="margin-bottom: 15px;">
+                        <strong style="color: #333;">Empresa:</strong> ${data.empresa}<br>
+                        <strong style="color: #333;">CNPJ:</strong> ${data.cnpj}<br>
+                        <strong style="color: #333;">Tipo de Consultoria:</strong> ${mapearTipoConsultoria(data.tipoConsultoria)}<br>
+                        <strong style="color: #333;">Data da Solicitação:</strong> ${currentDate}
+                    </div>
+                </div>
+
+                ${documentosInfo}
+
+                <!-- Next Steps -->
+                <div style="background-color: #fff3e0; padding: 25px; border-radius: 10px; margin: 25px 0; border-left: 4px solid #ff9800;">
+                    <h3 style="color: #e65100; margin: 0 0 15px 0; font-size: 18px;">🎯 Próximos Passos</h3>
+                    <ul style="color: #333; margin: 0; padding-left: 20px; line-height: 1.6;">
+                        <li>Nossa equipe especializada analisará sua solicitação</li>
+                        <li>Entraremos em contato em até <strong>24 horas úteis</strong></li>
+                        <li>Mantenha seus contatos atualizados para facilitar o retorno</li>
+                        <li>Prepare documentação adicional que possa ser solicitada</li>
+                    </ul>
+                </div>
+
+                <!-- Contact Info -->
+                <div style="text-align: center; margin: 30px 0;">
+                    <p style="color: #666; margin: 0 0 15px 0;">
+                        Dúvidas? Entre em contato conosco:
+                    </p>
+                    <div style="background-color: #25d366; color: white; padding: 12px 25px; border-radius: 25px; display: inline-block; text-decoration: none; margin: 10px;">
+                        📱 WhatsApp: (92) 99988-9392
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Footer -->
+            <div style="background-color: #1e3c72; padding: 25px; text-align: center;">
+                <div style="margin-bottom: 15px;">
+                    <h3 style="color: #ffffff; margin: 0; font-size: 20px; font-weight: 300; display: flex; align-items: center; justify-content: center; gap: 10px;">
+                        <img src="cid:logo" alt="Aporte Capital" style="height: 28px; margin-right: 10px; width: auto; vertical-align: middle;" />
+                        Aporte Capital
+                    </h3>
+                    <p style="color: #ffffff; margin: 5px 0 0 0; font-size: 14px; opacity: 0.9;">
+                        Transformando empresas através de soluções financeiras inteligentes
+                    </p>
+                </div>
+                
+                <div style="border-top: 1px solid #2a5298; padding-top: 15px;">
+                    <p style="color: #b3d9ff; margin: 0; font-size: 12px;">
+                        Este é um email automático. Por favor, não responda diretamente a esta mensagem.
+                    </p>
+                    <p style="color: #b3d9ff; margin: 5px 0 0 0; font-size: 12px;">
+                        © 2024 Aporte Capital - Todos os direitos reservados
+                    </p>
+                </div>
+            </div>
+
+        </div>
+    </body>
+    </html>`;
 }
 
 // ===== ROTAS =====
@@ -1516,6 +1667,30 @@ app.post('/api/consultoria', upload.array('documentos', 5), async (req, res) => 
         
         const emailResult = await transporter.sendMail(mailOptions);
         console.log('✅ Email enviado com sucesso!', emailResult.messageId);
+        
+        // Envia email de confirmação automático para o cliente
+        try {
+            const confirmationMailOptions = {
+                from: `"Aporte Capital" <${emailConfig.auth.user}>`,
+                to: req.body.email,
+                subject: 'Confirmação de Solicitação - Aporte Capital',
+                html: generateConfirmationEmailHTML(req.body, req.files),
+                attachments: [
+                    {
+                        filename: 'logo.png',
+                        path: path.join(__dirname, 'public', 'images', 'logo.png'),
+                        cid: 'logo' // Content-ID para referenciar no HTML
+                    }
+                ]
+            };
+            
+            console.log('📧 Enviando email de confirmação para o cliente...');
+            const confirmationResult = await transporter.sendMail(confirmationMailOptions);
+            console.log('✅ Email de confirmação enviado com sucesso!', confirmationResult.messageId);
+        } catch (confirmationError) {
+            console.error('⚠️ Erro ao enviar email de confirmação (não crítico):', confirmationError.message);
+            // Não interrompe o fluxo principal se o email de confirmação falhar
+        }
         
         // Gera duas mensagens do WhatsApp diferentes:
         // 1. Para o CLIENTE (sem link de download - mais limpa)
