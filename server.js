@@ -1026,8 +1026,8 @@ function generateEmailHTML(data, dadosCNPJ = null, downloadLink = null, files = 
                 
                 <!-- Seção Administrativa -->
                 <div style="background: linear-gradient(135deg, #1e40af, #3b82f6); color: white; padding: 25px; border-radius: 12px; margin: 30px 0; text-align: center;">
-                    <h3 style="margin: 0 0 15px 0; color: #1e40af;">🔧 Área Administrativa - Aporte Capital</h3>
-                    <p style="margin: 0 0 20px 0; color: #1e40af; opacity: 0.9;">Acesse o dashboard para consultas detalhadas de CNPJ e análises de score</p>
+                    <h3 style="margin: 0 0 15px 0; color: #ffffff;">🔧 Área Administrativa - Aporte Capital</h3>
+                    <p style="margin: 0 0 20px 0; color: #ffffff; opacity: 0.9;">Acesse o dashboard para consultas detalhadas de CNPJ e análises de score</p>
                     
                     <div style="text-align: center; margin: 25px 0;">
                         <a href="${process.env.BASE_URL || 'http://localhost:3001'}/dashboard" 
@@ -1048,8 +1048,8 @@ function generateEmailHTML(data, dadosCNPJ = null, downloadLink = null, files = 
                         </a>
                     </div>
                     
-                    <div style="margin-top: 20px; font-size: 14px; color: #1e40af;">
-                        <div style="margin-bottom: 8px; color: #1e40af;"><span style="color: #1e40af;">🔍</span> <strong>Funcionalidades disponíveis:</strong></div>
+                    <div style="margin-top: 20px; font-size: 14px; color: #ffffff;">
+                        <div style="margin-bottom: 8px; color: #ffffff;"><span style="color: #ffffff;">🔍</span> <strong>Funcionalidades disponíveis:</strong></div>
                         <div style="display: flex; justify-content: center; flex-wrap: wrap; gap: 15px; margin-top: 10px;">
                             <span style="background: #ffffff; color: #1e40af; padding: 8px 15px; border-radius: 20px; font-size: 13px; font-weight: 600; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">✅ Consulta manual de CNPJ</span>
                             <span style="background: #ffffff; color: #1e40af; padding: 8px 15px; border-radius: 20px; font-size: 13px; font-weight: 600; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">📊 Análise de score em tempo real</span>
