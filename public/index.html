@@ -1,0 +1,748 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <!-- Meta tags essenciais -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    
+    <!-- SEO e Meta dados -->
+    <title>Aporte Capital - Soluções de Crédito para Empresas em Manaus</title>
+    <meta name="description" content="A Aporte Capital oferece consultoria especializada em crédito para empresas que faturam acima de R$ 350 mil/ano em Manaus e Região Norte. Capital de giro, expansão e modernização.">
+    <meta name="keywords" content="crédito empresarial, capital de giro, financiamento, Manaus, Região Norte, consultoria financeira">
+    <meta name="author" content="Aporte Capital">
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://aportecapitalcred.com.br">
+    <meta property="og:title" content="Aporte Capital - Soluções de Crédito para Empresas">
+    <meta property="og:description" content="Consultoria especializada em crédito para empresas de alto faturamento em Manaus e Região Norte.">
+    <meta property="og:image" content="https://aportecapitalcred.com.br/images/share.jpg">
+    
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" content="https://aportecapitalcred.com.br">
+    <meta property="twitter:title" content="Aporte Capital - Soluções de Crédito para Empresas">
+    <meta property="twitter:description" content="Consultoria especializada em crédito para empresas de alto faturamento em Manaus e Região Norte.">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="./images/logo.png">
+    
+    <!-- Backend availability indicator (only for local development) -->
+    <meta name="backend-available" content="true">
+    
+    <!-- Preload de recursos críticos -->
+    <link rel="preload" href="./styles.css" as="style">
+    <link rel="preload" href="./script.js" as="script">
+    
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="./styles.css">
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Loader de carregamento -->
+    <div class="loader-container" id="loader">
+        <div class="loader">
+            <div class="loader-ring"></div>
+            <div class="loader-text">Carregando...</div>
+        </div>
+    </div>
+
+    <!-- Navegação principal -->
+    <nav class="navbar" id="navbar" role="navigation" aria-label="navegação principal">
+        <div class="navbar-container">
+            <!-- Logo da empresa -->
+            <div class="navbar-brand">
+                <a href="#home" class="navbar-logo" aria-label="Aporte Capital - Página inicial">
+                    <img src="./images/logo.png" alt="Aporte Capital" width="180" height="60">
+                </a>
+                
+                <!-- Menu mobile toggle -->
+                <button class="navbar-toggle" id="navbar-toggle" aria-label="Abrir menu de navegação" aria-expanded="false">
+                    <span class="hamburger-line"></span>
+                    <span class="hamburger-line"></span>
+                    <span class="hamburger-line"></span>
+                </button>
+            </div>
+            
+            <!-- Menu de navegação -->
+            <div class="navbar-menu" id="navbar-menu">
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a href="#home" class="nav-link active" data-section="home">Início</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#sobre" class="nav-link" data-section="sobre">Sobre</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#servicos" class="nav-link" data-section="servicos">Serviços</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#empresarios" class="nav-link" data-section="empresarios">Empresários</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#contato" class="nav-link" data-section="contato">Contato</a>
+                    </li>
+                </ul>
+                
+                <!-- CTA no menu -->
+                <div class="navbar-cta">
+                    <a href="#contato" class="btn btn-primary">Fale Conosco</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Seção Hero Principal -->
+    <section class="hero" id="home">
+        <div class="hero-background">
+            <img src="./images/hero-1.jpg" alt="Empresários em reunião" class="hero-bg-image">
+            <div class="hero-overlay"></div>
+        </div>
+        
+        <div class="hero-content">
+            <div class="container">
+                <div class="hero-text">
+                    <h1 class="hero-title">
+                        <span class="hero-title-main">Potencialize Seu Negócio</span>
+                        <span class="hero-title-sub">em Manaus e Região Norte</span>
+                    </h1>
+                    <p class="hero-description">
+                        Soluções de crédito sob medida para empresas que faturam acima de R$ 350 mil/ano. 
+                        Transforme oportunidades em grandes resultados com nossa consultoria especializada.
+                    </p>
+                    <div class="hero-actions">
+                        <button type="button" class="btn btn-primary btn-large" onclick="openConsultoriaModal()">
+                            Solicitar Consultoria
+                        </button>
+                        <a href="#sobre" class="btn btn-secondary btn-large">
+                            Saiba Mais
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+
+    </section>
+
+    <!-- Marquee animado -->
+    <div class="marquee">
+        <div class="marquee-content">
+            <span>Aporte Capital</span>
+            <span>Crédito Estratégico</span>
+            <span>Manaus e Região Norte</span>
+            <span>Aporte Capital</span>
+            <span>Crédito Estratégico</span>
+            <span>Manaus e Região Norte</span>
+        </div>
+    </div>
+
+    <!-- Seção Sobre -->
+    <section class="section section-about" id="sobre">
+        <div class="container">
+            <div class="section-content">
+                <div class="content-text">
+                    <h2 class="section-title">
+                        Expertise em Crédito para <span class="text-highlight">Alto Faturamento</span>
+                    </h2>
+                    
+                    <div class="text-content">
+                        <p class="lead-text">
+                            Se sua empresa fatura acima de R$ 350 mil/ano, você sabe que oportunidades de 
+                            crescimento exigem recursos ágeis e estratégicos.
+                        </p>
+                        
+                        <p>
+                            Na Aporte Capital, oferecemos consultoria especializada para captar crédito 
+                            de forma inteligente, seja para:
+                        </p>
+                        
+                        <ul class="feature-list">
+                            <li class="feature-item">
+                                <span class="feature-icon">💰</span>
+                                <span>Capital de giro que sustente sua operação em alta performance</span>
+                            </li>
+                            <li class="feature-item">
+                                <span class="feature-icon">📈</span>
+                                <span>Expansão de estoque para atender demandas sazonais ou novos mercados</span>
+                            </li>
+                            <li class="feature-item">
+                                <span class="feature-icon">🏭</span>
+                                <span>Aquisição de máquinas e tecnologia que elevem sua produtividade</span>
+                            </li>
+                        </ul>
+                        
+                        <p>
+                            Com expertise em Manaus e Região Norte, entendemos os desafios do polo industrial 
+                            e comercial da região. Trabalhamos com linhas de crédito exclusivas para empresas 
+                            de pequeno, médio e grande porte.
+                        </p>
+                    </div>
+                </div>
+                
+                <div class="content-image">
+                    <div class="image-container">
+                        <img src="./images/sobre.jpg" alt="Consultoria empresarial" class="section-image">
+                        <div class="image-decoration"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Seção Diferenciais -->
+    <section class="section section-features" id="servicos">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title centered section-title-primary">
+                    Por que escolher a Aporte Capital?
+                </h2>
+            </div>
+            
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-card-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M9 12l2 2 4-4"/>
+                            <circle cx="12" cy="12" r="9"/>
+                        </svg>
+                    </div>
+                    <h3 class="feature-card-title">Consultoria Personalizada</h3>
+                    <p class="feature-card-description">
+                        Estratégias adaptadas ao seu faturamento e setor específico
+                    </p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-card-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                            <circle cx="9" cy="7" r="4"/>
+                            <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+                            <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+                        </svg>
+                    </div>
+                    <h3 class="feature-card-title">Parcerias Estratégicas</h3>
+                    <p class="feature-card-description">
+                        Rede com os principais bancos e instituições financeiras
+                    </p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-card-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="10"/>
+                            <polyline points="12,6 12,12 16,14"/>
+                        </svg>
+                    </div>
+                    <h3 class="feature-card-title">Agilidade na Liberação</h3>
+                    <p class="feature-card-description">
+                        Processos otimizados que minimizam burocracias desnecessárias
+                    </p>
+                </div>
+            </div>
+            
+            <div class="section-cta">
+                <p class="cta-text">
+                    <strong>Não deixe a falta de capital limitar seu crescimento.</strong> 
+                    Fale conosco e descubra como transformar crédito em resultados concretos.
+                </p>
+                <button type="button" class="btn btn-primary btn-large" onclick="openConsultoriaModal()">
+                    Solicitar Consultoria
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Marquee animado -->
+    <div class="marquee marquee-reverse">
+        <div class="marquee-content">
+            <span>Soluções Financeiras</span>
+            <span>Crescimento Sustentável</span>
+            <span>Resultados Concretos</span>
+            <span>Soluções Financeiras</span>
+            <span>Crescimento Sustentável</span>
+            <span>Resultados Concretos</span>
+        </div>
+    </div>
+
+    <!-- Seção Empresários -->
+    <section class="section section-entrepreneurs" id="empresarios">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title centered">
+                    Foco em <span class="text-highlight">Gestores e Empresários</span>
+                </h2>
+            </div>
+            
+            <div class="section-content reverse">
+                <div class="content-image">
+                    <div class="image-container">
+                        <img src="./images/gestores.jpg" alt="Gestores empresariais" class="section-image">
+                        <div class="image-decoration"></div>
+                    </div>
+                </div>
+                
+                <div class="content-text">
+                    <h3 class="content-subtitle">
+                        Como o Crédito Estratégico Pode Ser Seu Maior Aliado
+                    </h3>
+                    
+                    <div class="text-content">
+                        <p class="lead-text">
+                            Empresários e gestores que faturam acima de R$ 350 mil/ano, sabemos que 
+                            decisões financeiras podem definir o futuro do seu negócio.
+                        </p>
+                        
+                        <p>
+                            Na Aporte Capital, não somos apenas consultores de crédito - somos parceiros 
+                            estratégicos para empresas que buscam:
+                        </p>
+                        
+                        <ul class="feature-list">
+                            <li class="feature-item">
+                                <span class="feature-icon">🏭</span>
+                                <span>Aumentar capacidade produtiva com máquinas modernas e tecnologia</span>
+                            </li>
+                            <li class="feature-item">
+                                <span class="feature-icon">💼</span>
+                                <span>Garantir capital de giro para aproveitar oportunidades de mercado</span>
+                            </li>
+                            <li class="feature-item">
+                                <span class="feature-icon">📦</span>
+                                <span>Expandir estoques com segurança para atender novos clientes</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Seção Hero Secundário -->
+    <section class="hero hero-secondary">
+        <div class="hero-background">
+            <img src="./images/hero-2.jpg" alt="Crescimento empresarial" class="hero-bg-image">
+            <div class="hero-overlay"></div>
+        </div>
+        
+        <div class="hero-content">
+            <div class="container">
+                <div class="hero-text centered">
+                    <h2 class="hero-title-secondary hero-title-uniform">
+                        Para empresas sérias, soluções sérias
+                    </h2>
+                    <p class="hero-hashtag">#CréditoParaCrescer</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Seção Soluções -->
+    <section class="section section-solutions">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title centered section-title-primary">
+                    Sua empresa fatura mais de R$ 350 mil/ano?
+                </h2>
+                <p class="section-subtitle">
+                    Veja como obter crédito com condições exclusivas em Manaus e Região Norte
+                </p>
+            </div>
+            
+            <div class="solutions-grid">
+                <div class="solution-card">
+                    <div class="solution-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="10"/>
+                            <line x1="12" y1="6" x2="12" y2="12"/>
+                            <line x1="16" y1="12" x2="12" y2="12"/>
+                        </svg>
+                    </div>
+                    <h3 class="solution-title">Capital de Giro</h3>
+                    <p class="solution-description">
+                        Mantenha sua operação saudável mesmo em períodos de alta demanda
+                    </p>
+                </div>
+                
+                <div class="solution-card">
+                    <div class="solution-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/>
+                        </svg>
+                    </div>
+                    <h3 class="solution-title">Modernização</h3>
+                    <p class="solution-description">
+                        Adquira máquinas e tecnologia para reduzir custos e aumentar eficiência
+                    </p>
+                </div>
+                
+                <div class="solution-card">
+                    <div class="solution-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>
+                            <polyline points="3.27,6.96 12,12.01 20.73,6.96"/>
+                            <line x1="12" y1="22.08" x2="12" y2="12"/>
+                        </svg>
+                    </div>
+                    <h3 class="solution-title">Expansão de Estoque</h3>
+                    <p class="solution-description">
+                        Prepare-se para novos contratos sem preocupações com liquidez
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Seção Contato -->
+    <section class="section section-contact" id="contato">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title centered light">Entre em Contato</h2>
+                <p class="section-subtitle light">
+                    Pronto para transformar seu negócio? Fale conosco agora mesmo
+                </p>
+            </div>
+            
+            <div class="contact-content">
+                <div class="contact-info">
+                    <div class="contact-item">
+                        <div class="contact-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+                                <polyline points="22,6 12,13 2,6"/>
+                            </svg>
+                        </div>
+                        <div class="contact-details">
+                            <h4>E-mail</h4>
+                            <a href="mailto:contato@aportecapitalcred.com.br">contato@aportecapitalcred.com.br</a>
+                        </div>
+                    </div>
+                    
+                    <div class="contact-item">
+                        <div class="contact-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>
+                            </svg>
+                        </div>
+                        <div class="contact-details">
+                            <h4>WhatsApp</h4>
+                            <a href="https://wa.me/5592999889392" target="_blank">(92) 9 9988-9392</a>
+                        </div>
+                    </div>
+                    
+                    <div class="contact-item">
+                        <div class="contact-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
+                                <circle cx="12" cy="10" r="3"/>
+                            </svg>
+                        </div>
+                        <div class="contact-details">
+                            <h4>Localização</h4>
+                            <p>Manaus e Região Norte</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="contact-form">
+                    <form id="contact-form" class="form">
+                        <div class="form-group">
+                            <label for="name" class="form-label">Nome Completo *</label>
+                            <input type="text" id="name" name="name" class="form-input" required>
+                        </div>
+                        
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="email" class="form-label">E-mail *</label>
+                                <input type="email" id="email" name="email" class="form-input" required>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="phone" class="form-label">Telefone *</label>
+                                <input type="tel" id="phone" name="phone" class="form-input" required>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="subject" class="form-label">Assunto *</label>
+                            <input type="text" id="subject" name="subject" class="form-input" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="message" class="form-label">Mensagem *</label>
+                            <textarea id="message" name="message" class="form-textarea" rows="5" required></textarea>
+                        </div>
+                        
+                        <button type="submit" class="btn btn-secondary btn-large btn-full">
+                            Enviar Mensagem
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-brand">
+                    <img src="./images/logo.png" alt="Aporte Capital" class="footer-logo">
+                    <p class="footer-description">
+                        Consultoria especializada em crédito para empresas de alto faturamento 
+                        em Manaus e Região Norte.
+                    </p>
+                </div>
+                
+                <div class="footer-links">
+                    <h4 class="footer-title">Links Rápidos</h4>
+                    <ul class="footer-nav">
+                        <li><a href="#home">Início</a></li>
+                        <li><a href="#sobre">Sobre</a></li>
+                        <li><a href="#servicos">Serviços</a></li>
+                        <li><a href="#empresarios">Empresários</a></li>
+                        <li><a href="#contato">Contato</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-contact">
+                    <h4 class="footer-title">Contato</h4>
+                    <div class="footer-contact-item">
+                        <a href="mailto:contato@aportecapitalcred.com.br">contato@aportecapitalcred.com.br</a>
+                    </div>
+                    <div class="footer-contact-item">
+                        <a href="https://wa.me/5592999889392" target="_blank">(92) 9 9988-9392</a>
+                    </div>
+                </div>
+                
+                <div class="footer-social">
+                    <h4 class="footer-title">Redes Sociais</h4>
+                    <div class="social-links">
+                        <a href="https://www.instagram.com/aporte_capital_/" target="_blank" class="social-link" aria-label="Instagram">
+                            <svg viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
+                            </svg>
+                        </a>
+                        <a href="https://wa.me/5592999889392" target="_blank" class="social-link" aria-label="WhatsApp">
+                            <svg viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893A11.821 11.821 0 0020.885 3.106"/>
+                            </svg>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="footer-bottom">
+                <p class="footer-copyright">
+                    © 2025 Aporte Capital. Todos os direitos reservados. 
+                    Desenvolvido por <a href="https://www.insitesdigital.com.br" target="_blank">Insites Digital</a>
+                </p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Modal de Consultoria -->
+    <div class="modal-overlay" id="consultoriaModal">
+        <div class="modal-container">
+            <div class="modal-header">
+                <!-- Cabeçalho estilo navbar -->
+                <div class="modal-navbar">
+                    <div class="modal-navbar-brand">
+                        <img src="./images/logo.png" alt="Aporte Capital" class="modal-logo">
+                        <div class="modal-title-section">
+                            <h2 class="modal-title">Avaliação Financeira Empresarial</h2>
+                            <p class="modal-subtitle">Preencha os dados para análise de crédito personalizada</p>
+                        </div>
+                    </div>
+                    <button class="modal-close" id="closeModal" aria-label="Fechar modal">
+                        <svg viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+            
+            <div class="modal-body">
+                <form id="consultoriaForm" class="consultoria-form" enctype="multipart/form-data">
+                    <!-- Informações Pessoais -->
+                    <div class="form-section">
+                        <h3 class="form-section-title">
+                            <span class="section-icon">👤</span>
+                            Informações de Contato
+                        </h3>
+                        
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="nomeCompleto" class="form-label">Nome Completo *</label>
+                                <input type="text" id="nomeCompleto" name="nomeCompleto" class="form-input" required>
+                                <span class="form-error"></span>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="email" class="form-label">E-mail *</label>
+                                <input type="email" id="email" name="email" class="form-input" required>
+                                <span class="form-error"></span>
+                            </div>
+                        </div>
+                        
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="telefone" class="form-label">Telefone *</label>
+                                <input type="tel" id="telefone" name="telefone" class="form-input" required>
+                                <span class="form-error"></span>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="empresa" class="form-label">Nome da Empresa *</label>
+                                <input type="text" id="empresa" name="empresa" class="form-input" required>
+                                <span class="form-error"></span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Informações Financeiras da Empresa -->
+                    <div class="form-section">
+                        <h3 class="form-section-title">
+                            <span class="section-icon">🏢</span>
+                            Dados Empresariais
+                        </h3>
+                        
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="cnpj" class="form-label">CNPJ *</label>
+                                <input type="text" id="cnpj" name="cnpj" class="form-input" 
+                                       placeholder="99.999.999/9999-99" required>
+                                <span class="form-error"></span>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="tempoExistencia" class="form-label">Tempo de Existência *</label>
+                                <select id="tempoExistencia" name="tempoExistencia" class="form-select" required>
+                                    <option value="">Selecione o tempo</option>
+                                    <option value="menos-1-ano">Menos de 1 ano</option>
+                                    <option value="1-2-anos">1 a 2 anos</option>
+                                    <option value="2-5-anos">2 a 5 anos</option>
+                                    <option value="5-10-anos">5 a 10 anos</option>
+                                    <option value="mais-10-anos">Mais de 10 anos</option>
+                                </select>
+                                <span class="form-error"></span>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="faturamentoAnual" class="form-label">Faturamento Anual *</label>
+                            <select id="faturamentoAnual" name="faturamentoAnual" class="form-select" required>
+                                <option value="">Selecione a faixa de faturamento</option>
+                                <option value="350k-500k">R$ 350 mil a R$ 500 mil</option>
+                                <option value="500k-1m">R$ 500 mil a R$ 1 milhão</option>
+                                <option value="1m-2m">R$ 1 milhão a R$ 2 milhões</option>
+                                <option value="2m-5m">R$ 2 milhões a R$ 5 milhões</option>
+                                <option value="5m-10m">R$ 5 milhões a R$ 10 milhões</option>
+                                <option value="mais-10m">Acima de R$ 10 milhões</option>
+                            </select>
+                            <span class="form-error"></span>
+                        </div>
+                    </div>
+                    
+                    <!-- Informações da Consultoria -->
+                    <div class="form-section">
+                        <h3 class="form-section-title">
+                            <span class="section-icon">💼</span>
+                            Detalhes da Consultoria
+                        </h3>
+                        
+                        <div class="form-group">
+                            <label for="tipoConsultoria" class="form-label">Tipo de Consultoria *</label>
+                            <select id="tipoConsultoria" name="tipoConsultoria" class="form-select" required>
+                                <option value="">Selecione o tipo de consultoria</option>
+                                <option value="capital-giro">Capital de Giro</option>
+                                <option value="expansao">Expansão de Negócio</option>
+                                <option value="modernizacao">Modernização</option>
+                                <option value="investimento">Investimento em Equipamentos</option>
+                                <option value="outros">Outros</option>
+                            </select>
+                            <span class="form-error"></span>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="mensagem" class="form-label">Descrição do Projeto *</label>
+                            <textarea id="mensagem" name="mensagem" class="form-textarea" rows="4" 
+                                placeholder="Descreva brevemente seu projeto e necessidades de crédito..." required></textarea>
+                            <span class="form-error"></span>
+                        </div>
+                    </div>
+                    
+                    <!-- Upload de Documentos -->
+                    <div class="form-section">
+                        <h3 class="form-section-title">
+                            <span class="section-icon">📄</span>
+                            Documentos para Análise Financeira
+                        </h3>
+                        <p class="form-section-description">
+                            <strong>Documentos obrigatórios:</strong> Demonstrativo de Resultados (DRE), Balanço Patrimonial, 
+                            Fluxo de Caixa, Comprovante de Faturamento, Certidões Negativas (Federal, Estadual, Municipal)
+                        </p>
+                        
+                        <div class="form-group">
+                            <label for="documentos" class="form-label">Documentos Financeiros (PDF) *</label>
+                            <div class="file-upload-area" id="fileUploadArea">
+                                <input type="file" id="documentos" name="documentos" class="file-input" 
+                                       multiple accept=".pdf" required>
+                                <div class="file-upload-content">
+                                    <svg class="file-upload-icon" viewBox="0 0 24 24" fill="currentColor">
+                                        <path d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20Z"/>
+                                    </svg>
+                                    <p class="file-upload-text">
+                                        <strong>Clique para selecionar</strong> ou arraste arquivos PDF aqui
+                                    </p>
+                                    <p class="file-upload-hint">Múltiplos arquivos permitidos • Máximo 10MB por arquivo</p>
+                                </div>
+                            </div>
+                            <div class="file-list" id="fileList"></div>
+                            <span class="form-error"></span>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="outrosDocumentos" class="form-label">Outros Documentos Necessários</label>
+                            <textarea id="outrosDocumentos" name="outrosDocumentos" class="form-textarea" rows="3" 
+                                placeholder="Liste outros documentos que possui ou que gostaria de incluir na análise (ex: contratos, garantias, avais, etc.)"></textarea>
+                            <span class="form-error"></span>
+                        </div>
+                    </div>
+                    
+                    <!-- Botões de Ação -->
+                    <div class="form-actions">
+                        <button type="button" class="btn btn-secondary" id="cancelarModal">Cancelar</button>
+                        <button type="submit" class="btn btn-primary" id="enviarConsultoria">
+                            <span class="btn-text">Enviar Solicitação</span>
+                            <span class="btn-loading" style="display: none;">
+                                <svg class="loading-spinner" viewBox="0 0 24 24">
+                                    <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" fill="none" opacity="0.25"/>
+                                    <path fill="currentColor" opacity="0.75" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"/>
+                                </svg>
+                                Enviando...
+                            </span>
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Botão flutuante WhatsApp -->
+    <a href="https://wa.me/5592999889392" class="whatsapp-float" target="_blank" aria-label="Fale conosco no WhatsApp">
+        <svg viewBox="0 0 24 24" fill="currentColor">
+            <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893A11.821 11.821 0 0020.885 3.106"/>
+        </svg>
+    </a>
+
+    <!-- Scripts -->
+    <script src="./script.js"></script>
+</body>
+</html>

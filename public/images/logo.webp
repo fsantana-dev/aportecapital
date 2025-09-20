@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 160" width="300" height="160">
+  <!-- Fundo do logo -->
+  <rect width="300" height="160" fill="#ffffff" rx="10"/>
+  
+  <!-- Elemento gráfico principal -->
+  <circle cx="60" cy="80" r="35" fill="#007bff" opacity="0.1"/>
+  <circle cx="60" cy="80" r="25" fill="#007bff" opacity="0.3"/>
+  <circle cx="60" cy="80" r="15" fill="#007bff"/>
+  
+  <!-- Seta crescente -->
+  <path d="M40 90 L50 70 L60 80 L70 60 L80 70" stroke="#ffffff" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+  
+  <!-- Texto principal -->
+  <text x="110" y="70" font-family="'Gloock', serif" font-size="28" font-weight="400" fill="#333">
+    APORTE
+  </text>
+  <text x="110" y="100" font-family="'Gloock', serif" font-size="28" font-weight="400" fill="#007bff">
+    CAPITAL
+  </text>
+  
+  <!-- Subtítulo -->
+  <text x="110" y="120" font-family="'Noto Sans', sans-serif" font-size="12" fill="#666">
+    SOLUÇÕES DE CRÉDITO
+  </text>
+  
+  <!-- Elemento decorativo -->
+  <rect x="110" y="125" width="120" height="2" fill="#007bff" opacity="0.3"/>
+</svg>

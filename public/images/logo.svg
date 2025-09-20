@@ -1,0 +1,30 @@
+<svg width="200" height="60" viewBox="0 0 200 60" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Fundo do logo -->
+  <rect width="200" height="60" rx="8" fill="url(#gradient1)"/>
+  
+  <!-- Ícone principal -->
+  <g transform="translate(15, 12)">
+    <!-- Símbolo de crescimento/gráfico -->
+    <path d="M8 28L16 20L24 24L32 12" stroke="#ffffff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+    <circle cx="8" cy="28" r="3" fill="#ffffff"/>
+    <circle cx="16" cy="20" r="3" fill="#ffffff"/>
+    <circle cx="24" cy="24" r="3" fill="#ffffff"/>
+    <circle cx="32" cy="12" r="3" fill="#ffffff"/>
+    
+    <!-- Seta indicando crescimento -->
+    <path d="M28 12L32 8L36 12" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+    <path d="M32 8L32 16" stroke="#ffffff" stroke-width="2" stroke-linecap="round"/>
+  </g>
+  
+  <!-- Texto do logo -->
+  <text x="65" y="25" font-family="Arial, sans-serif" font-size="16" font-weight="bold" fill="#ffffff">APORTE</text>
+  <text x="65" y="42" font-family="Arial, sans-serif" font-size="14" font-weight="normal" fill="#ffffff" opacity="0.9">CAPITAL</text>
+  
+  <!-- Gradiente -->
+  <defs>
+    <linearGradient id="gradient1" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#1e40af;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#3b82f6;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+</svg>

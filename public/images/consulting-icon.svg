@@ -1,0 +1,43 @@
+<svg width="80" height="80" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Círculo de fundo -->
+  <circle cx="40" cy="40" r="35" fill="url(#consultingGradient)" opacity="0.1"/>
+  <circle cx="40" cy="40" r="30" fill="none" stroke="url(#consultingGradient)" stroke-width="2"/>
+  
+  <!-- Ícone de pessoas/consultoria -->
+  <g transform="translate(20, 15)">
+    <!-- Pessoa 1 -->
+    <circle cx="15" cy="15" r="8" fill="#3b82f6"/>
+    <path d="M5 35C5 28 9 25 15 25C21 25 25 28 25 35V40H5V35Z" fill="#1e40af"/>
+    
+    <!-- Pessoa 2 (parcialmente visível) -->
+    <circle cx="30" cy="18" r="6" fill="#10b981" opacity="0.8"/>
+    <path d="M22 40C22 35 25 32 30 32C35 32 38 35 38 40V45H22V40Z" fill="#059669" opacity="0.8"/>
+    
+    <!-- Balão de diálogo -->
+    <g transform="translate(25, 5)">
+      <ellipse cx="10" cy="8" rx="12" ry="6" fill="#ffffff" stroke="#e5e7eb" stroke-width="1"/>
+      <path d="M5 12L8 16L11 12" fill="#ffffff" stroke="#e5e7eb" stroke-width="1"/>
+      
+      <!-- Ícones dentro do balão -->
+      <circle cx="6" cy="8" r="1.5" fill="#3b82f6"/>
+      <circle cx="10" cy="8" r="1.5" fill="#10b981"/>
+      <circle cx="14" cy="8" r="1.5" fill="#f59e0b"/>
+    </g>
+  </g>
+  
+  <!-- Ícone de gráfico/análise -->
+  <g transform="translate(45, 45)">
+    <rect x="0" y="10" width="4" height="15" fill="#3b82f6" rx="1"/>
+    <rect x="6" y="5" width="4" height="20" fill="#10b981" rx="1"/>
+    <rect x="12" y="8" width="4" height="17" fill="#f59e0b" rx="1"/>
+    <rect x="18" y="2" width="4" height="23" fill="#ef4444" rx="1"/>
+  </g>
+  
+  <!-- Gradiente -->
+  <defs>
+    <linearGradient id="consultingGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#10b981;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#059669;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+</svg>

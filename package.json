@@ -1,0 +1,60 @@
+{
+  "name": "aporte-capital-landing",
+  "version": "2.1.0",
+  "description": "Landing page moderna para captação de aportes financeiros - Deploy no Vercel",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "nodemon server.js",
+    "build": "echo \"Building for Vercel...\" && node build.js && echo \"Build completed successfully!\"",
+    "vercel-build": "echo \"Vercel build starting...\" && node build.js && echo \"Vercel build completed!\"",
+    "render": "node server.js",
+    "prod": "NODE_ENV=production node server.js",
+    "prod:win": "set NODE_ENV=production && node server.js",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "install-deps": "npm install",
+    "setup": "npm install && echo \"Configuração concluída! Execute 'npm start' para iniciar o servidor.\""
+  },
+  "keywords": [
+    "landing-page",
+    "consultoria",
+    "aporte-capital",
+    "formulario",
+    "upload",
+    "pdf",
+    "email",
+    "nodejs",
+    "express",
+    "render"
+  ],
+  "author": "Aporte Capital",
+  "license": "MIT",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^17.2.2",
+    "express": "^4.18.2",
+    "multer": "^2.0.0",
+    "nodemailer": "^6.9.7"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.2"
+  },
+  "engines": {
+    "node": "20.x",
+    "npm": ">=8.0.0"
+  },
+
+  "config": {
+    "port": "3001"
+  },
+  "nodemonConfig": {
+    "watch": [
+      "server.js"
+    ],
+    "ext": "js,json",
+    "ignore": [
+      "uploads/*",
+      "node_modules/*"
+    ]
+  }
+}
