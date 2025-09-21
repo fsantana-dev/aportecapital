@@ -936,7 +936,7 @@ function generateEmailHTML(data, dadosCNPJ = null, downloadLink = null, files = 
                         <div style="background: white; padding: 15px; border-radius: 8px; margin-bottom: 15px;">
                             <h4 style="margin: 0 0 10px 0; color: #374151;">📋 Fatores Analisados:</h4>
                             <div style="color: #6b7280;">
-                                ${scoreEstimado.fatores.map(fator => `<div style="margin-bottom: 5px;">• ${fator}</div>`).join('')}
+                                ${scoreEstimado.fatores && Array.isArray(scoreEstimado.fatores) ? scoreEstimado.fatores.map(fator => `<div style="margin-bottom: 5px;">• ${fator}</div>`).join('') : '<div>Nenhum fator disponível</div>'}
                             </div>
                         </div>
                         
@@ -1025,31 +1025,31 @@ function generateEmailHTML(data, dadosCNPJ = null, downloadLink = null, files = 
                 </div>
                 
                 <!-- Seção Administrativa -->
-                <div style="background: linear-gradient(135deg, #1e40af, #3b82f6); color: white; padding: 25px; border-radius: 12px; margin: 30px 0; text-align: center;">
-                    <h3 style="margin: 0 0 15px 0; color: #ffffff;">🔧 Área Administrativa - Aporte Capital</h3>
-                    <p style="margin: 0 0 20px 0; color: #ffffff; opacity: 0.9;">Acesse o dashboard para consultas detalhadas de CNPJ e análises de score</p>
+                <div style="background: linear-gradient(135deg, #1e40af, #3b82f6); color: #1e40af; padding: 25px; border-radius: 12px; margin: 30px 0; text-align: center;">
+                    <h3 style="margin: 0 0 15px 0; color: #1e40af;">🔧 Área Administrativa - Aporte Capital</h3>
+                    <p style="margin: 0 0 20px 0; color: #1e40af; opacity: 0.9;">Acesse o dashboard para consultas detalhadas de CNPJ e análises de score</p>
                     
                     <div style="text-align: center; margin: 25px 0;">
                         <a href="${process.env.BASE_URL || 'http://localhost:3001'}/dashboard" 
-                           style="background: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%); 
+                           style="background: #22c55e; 
                                   color: #ffffff; 
-                                  padding: 18px 40px; 
+                                  padding: 15px 30px; 
                                   text-decoration: none; 
-                                  border-radius: 12px; 
+                                  border-radius: 25px; 
                                   display: inline-block; 
                                   font-weight: bold; 
                                   font-size: 16px;
-                                  box-shadow: 0 8px 20px rgba(30, 64, 175, 0.3);
-                                  border: 2px solid transparent;
+                                  box-shadow: 0 4px 12px rgba(34, 197, 94, 0.3);
+                                  border: none;
                                   transition: all 0.3s ease;
-                                  text-transform: uppercase;
+                                  text-transform: none;
                                   letter-spacing: 0.5px;">
                             📊 Acessar Dashboard Administrativo
                         </a>
                     </div>
                     
                     <div style="margin-top: 20px; font-size: 14px; color: #ffffff;">
-                        <div style="margin-bottom: 8px; color: #ffffff;"><span style="color: #ffffff;">🔍</span> <strong>Funcionalidades disponíveis:</strong></div>
+                        <div style="margin-bottom: 8px; color: #1e40af;"><span style="color:#1e40af;">🔍</span> <strong>Funcionalidades disponíveis:</strong></div>
                         <div style="display: flex; justify-content: center; flex-wrap: wrap; gap: 15px; margin-top: 10px;">
                             <span style="background: #ffffff; color: #1e40af; padding: 8px 15px; border-radius: 20px; font-size: 13px; font-weight: 600; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">✅ Consulta manual de CNPJ</span>
                             <span style="background: #ffffff; color: #1e40af; padding: 8px 15px; border-radius: 20px; font-size: 13px; font-weight: 600; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">📊 Análise de score em tempo real</span>
@@ -1259,7 +1259,7 @@ function generateConfirmationEmailHTML(data, files = null) {
         <div style="max-width: 600px; margin: 0 auto; background-color: #ffffff; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">
             
             <!-- Header -->
-            <div style="background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%); padding: 30px; text-align: center;">
+            <div style="background-color: #021748; padding: 30px; text-align: center;">
                 <h1 style="color: #ffffff; margin: 0; font-size: 28px; font-weight: 300; display: flex; align-items: center; justify-content: center; gap: 10px;">
                     <img src="cid:logo" alt="Aporte Capital" style="height: 40px; margin-right: 10px; width: auto; vertical-align: middle;" />
                     Aporte Capital
@@ -1323,7 +1323,7 @@ function generateConfirmationEmailHTML(data, files = null) {
             </div>
 
             <!-- Footer -->
-            <div style="background-color: #1e3c72; padding: 25px; text-align: center;">
+            <div style="background-color: #021748; padding: 25px; text-align: center;">
                 <div style="margin-bottom: 15px;">
                     <h3 style="color: #ffffff; margin: 0; font-size: 20px; font-weight: 300; display: flex; align-items: center; justify-content: center; gap: 10px;">
                         <img src="cid:logo" alt="Aporte Capital" style="height: 28px; margin-right: 10px; width: auto; vertical-align: middle;" />
@@ -1334,11 +1334,11 @@ function generateConfirmationEmailHTML(data, files = null) {
                     </p>
                 </div>
                 
-                <div style="border-top: 1px solid #2a5298; padding-top: 15px;">
-                    <p style="color: #b3d9ff; margin: 0; font-size: 12px;">
+                <div style="border-top: 1px solid rgba(255, 255, 255, 0.2); padding-top: 15px;">
+                    <p style="color: #ffffff; margin: 0; font-size: 12px; opacity: 0.8;">
                         Este é um email automático. Por favor, não responda diretamente a esta mensagem.
                     </p>
-                    <p style="color: #b3d9ff; margin: 5px 0 0 0; font-size: 12px;">
+                    <p style="color: #ffffff; margin: 5px 0 0 0; font-size: 12px; opacity: 0.8;">
                         © 2024 Aporte Capital - Todos os direitos reservados
                     </p>
                 </div>
@@ -1822,47 +1822,7 @@ app.get('/api/consulta-cnpj/:cnpj', async (req, res) => {
     }
 });
 
-/**
- * Endpoint de teste para verificar email
- */
-app.get('/test-email', (req, res) => {
-    const testData = {
-        nome: 'Teste Dashboard',
-        email: 'teste@teste.com',
-        telefone: '(11) 99999-9999',
-        empresa: 'Empresa Teste',
-        cnpj: '11.222.333/0001-81',
-        faturamento: '500k-1M',
-        tempo: '2-5-anos',
-        tipo: 'expansao',
-        descricao: 'Teste do dashboard'
-    };
-    
-    const testCNPJ = {
-        success: true,
-        nome: 'EMPRESA TESTE LTDA',
-        situacao: 'ATIVA',
-        cnpj: '11.222.333/0001-81',
-        abertura: '01/01/2020',
-        capital: '100000',
-        porte: 'PEQUENO',
-        natureza_juridica: 'SOCIEDADE EMPRESÁRIA LIMITADA',
-        telefone: '(11) 3333-4444',
-        email: 'contato@empresateste.com.br',
-        endereco: {
-            logradouro: 'RUA TESTE',
-            numero: '123',
-            complemento: 'SALA 1',
-            bairro: 'CENTRO',
-            municipio: 'SÃO PAULO',
-            uf: 'SP',
-            cep: '01000-000'
-        }
-    };
-    
-    const emailHTML = generateEmailHTML(testData, testCNPJ, null, null, 750);
-    res.send(emailHTML);
-});
+
 
 /**
  * Página do Dashboard Administrativo
