@@ -172,29 +172,46 @@ body {
     margin-bottom: 1.5rem;
 }
 
-/* ===== NAVEGAÇÃO ===== */
+/* ===== NAVEGAÇÃO COM TRANSPARÊNCIA ===== */
 .navbar {
     position: fixed;
     top: 0;
     left: 0;
     right: 0;
-    background: var(--primary-color);
-    backdrop-filter: blur(10px);
-    border-bottom: 1px solid var(--gray-200);
+    /* TRANSPARÊNCIA DA NAVBAR - Ajuste os valores abaixo conforme necessário:
+       - Para MAIS transparente: diminua o valor de 0.85 (ex: 0.7, 0.6, 0.5)
+       - Para MENOS transparente: aumente o valor de 0.85 (ex: 0.9, 0.95, 1.0)
+       - 1.0 = totalmente opaco (sem transparência)
+       - 0.0 = totalmente transparente (invisível) */
+    background: rgba(2, 23, 72, 0.85); /* #021748 com 85% de opacidade */
+    
+    /* Efeito de desfoque no fundo para melhor legibilidade */
+    backdrop-filter: blur(15px); /* Aumentado para compensar a transparência */
+    -webkit-backdrop-filter: blur(15px); /* Compatibilidade com Safari */
+    
+    /* Borda sutil para definir melhor a navbar transparente */
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    
     z-index: 1000;
     transition: all var(--transition-normal);
 }
 
+/* Estado da navbar quando a página é rolada - mais opaca para melhor contraste */
 .navbar.scrolled {
-    background: var(--primary-color);
+    /* TRANSPARÊNCIA NO SCROLL - Ajuste conforme necessário:
+       - Para navbar mais visível no scroll: aumente de 0.95 para 1.0
+       - Para manter transparência no scroll: diminua de 0.95 para 0.9 ou 0.85 */
+    background: rgba(2, 23, 72, 0.95); /* Mais opaca quando rolada */
     box-shadow: var(--shadow-md);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.15);
 }
 
 .navbar-container {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 1rem 1.5rem;
+    /* Aumentado padding vertical para acomodar logo maior */
+    padding: 1.2rem 1.5rem; /* Aumentado de 1rem para 1.2rem */
     max-width: var(--container-max-width);
     margin: 0 auto;
 }
@@ -205,9 +222,10 @@ body {
     gap: 1rem;
 }
 
+/* Logo da empresa - Aumentada para dar mais destaque */
 .navbar-logo img {
-    height: 50px;
-    width: auto;
+    height: 70px; /* Aumentado de 50px para 70px para maior destaque */
+    width: auto; /* Mantém proporção automática */
     transition: transform var(--transition-normal);
 }
 
@@ -295,7 +313,7 @@ body {
 }
 
 .btn-primary {
-    background: var(--gradient-primary);
+    background: var(--primary-color);
     color: var(--white);
     box-shadow: var(--shadow-md);
 }
@@ -401,12 +419,25 @@ body {
     flex-wrap: wrap;
 }
 
+/* === SEÇÃO HERO SECUNDÁRIO - CONFIGURAÇÕES DE ESCURECIMENTO === */
 .hero-secondary {
     min-height: 60vh;
 }
 
+/* Filtros para escurecer ao máximo a imagem hero-2.jpg */
+.hero-secondary .hero-bg-image {
+    /* Reduz o brilho para 30% (valores menores = mais escuro) */
+    filter: brightness(0.5) 
+            /* Aumenta o contraste para 120% (realça as diferenças tonais) */
+            contrast(1.2) 
+            /* Reduz a saturação para 80% (cores menos vibrantes) */
+            saturate(0.7);
+}
+
+/* Overlay escuro para garantir máximo escurecimento */
 .hero-secondary .hero-overlay {
-    background: rgba(0, 0, 0, 0.8);
+    /* Aumentado para 95% de opacidade (quase preto total) */
+    background: rgba(0, 0, 0, 0.5);
 }
 
 .hero-title-secondary {
@@ -980,15 +1011,22 @@ body {
         display: flex;
     }
     
+    /* Menu mobile com transparência consistente */
     .navbar-menu {
         position: fixed;
         top: 100%;
         left: 0;
         right: 0;
-        background: var(--white);
+        /* TRANSPARÊNCIA DO MENU MOBILE - Ajuste conforme necessário:
+           - Para MAIS transparente: diminua de 0.95 para 0.9, 0.85, etc.
+           - Para MENOS transparente: aumente de 0.95 para 1.0 (opaco total) */
+        background: rgba(255, 255, 255, 0.95); /* Branco com 95% de opacidade */
+        backdrop-filter: blur(10px); /* Desfoque para melhor legibilidade */
+        -webkit-backdrop-filter: blur(10px); /* Compatibilidade Safari */
         flex-direction: column;
         padding: 2rem 1.5rem;
         box-shadow: var(--shadow-lg);
+        border-top: 1px solid rgba(2, 23, 72, 0.1); /* Borda sutil */
         transform: translateY(-100%);
         opacity: 0;
         visibility: hidden;
@@ -1053,6 +1091,12 @@ body {
     
     .navbar-container {
         padding: 1rem;
+    }
+    
+    /* Ajuste da logo para dispositivos móveis menores */
+    .navbar-logo img {
+        height: 60px; /* Reduzido de 70px para 60px em mobile */
+        width: auto;
     }
     
     .section {
