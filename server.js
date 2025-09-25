@@ -634,6 +634,7 @@ console.log('=== DEBUG: Configuração de Email ===');
 console.log('EMAIL_USER:', process.env.EMAIL_USER ? 'Configurado' : 'NÃO CONFIGURADO');
 console.log('EMAIL_PASS:', process.env.EMAIL_PASS ? 'Configurado' : 'NÃO CONFIGURADO');
 console.log('RECIPIENT_EMAIL:', process.env.RECIPIENT_EMAIL ? 'Configurado' : 'NÃO CONFIGURADO');
+console.log('CC_EMAIL:', process.env.CC_EMAIL ? 'Configurado' : 'NÃO CONFIGURADO');
 console.log('SMTP_HOST:', process.env.SMTP_HOST || 'Usando padrão: smtp.gmail.com');
 console.log('SMTP_PORT:', process.env.SMTP_PORT || 'Usando padrão: 587');
 console.log('SMTP_SECURE:', process.env.SMTP_SECURE || 'Usando padrão: false');
@@ -1653,8 +1654,8 @@ app.post('/api/consultoria', upload.array('documentos', 5), async (req, res) => 
         const subjectSuffix = dadosCNPJ && dadosCNPJ.success ? ` - ${dadosCNPJ.situacao}` : '';
         const mailOptions = {
             from: `"Formulário de Consultoria" <${emailConfig.auth.user}>`,
-            // to: process.env.RECIPIENT_EMAIL || 'contato@aportecapitalcred.com.br', 
-            to: process.env.RECIPIENT_EMAIL ,
+            to: process.env.RECIPIENT_EMAIL || 'contato@aportecapitalcred.com.br',
+            cc: process.env.CC_EMAIL, // Email em cópia
             subject: `Nova Solicitação de Consultoria - ${req.body.empresa}${subjectSuffix}`,
             html: generateEmailHTML(req.body, dadosCNPJ, downloadLink, req.files, scoreEstimado),
             attachments: attachments
@@ -1663,6 +1664,7 @@ app.post('/api/consultoria', upload.array('documentos', 5), async (req, res) => 
         // Envia o email
         console.log('📧 Tentando enviar email...');
         console.log('📧 Para:', mailOptions.to);
+        console.log('📧 CC:', mailOptions.cc || 'Nenhum');
         console.log('📧 Assunto:', mailOptions.subject);
         
         const emailResult = await transporter.sendMail(mailOptions);

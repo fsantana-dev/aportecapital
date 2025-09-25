@@ -9,6 +9,7 @@ export default async function handler(req, res) {
     console.log('- EMAIL_USER:', process.env.EMAIL_USER ? '✅ Configurado' : '❌ Não configurado');
     console.log('- EMAIL_PASS:', process.env.EMAIL_PASS ? '✅ Configurado' : '❌ Não configurado');
     console.log('- RECIPIENT_EMAIL:', process.env.RECIPIENT_EMAIL ? '✅ Configurado' : '❌ Não configurado');
+    console.log('- CC_EMAIL:', process.env.CC_EMAIL ? '✅ Configurado' : '❌ Não configurado');
     console.log('- SMTP_HOST:', process.env.SMTP_HOST || 'smtp.gmail.com (padrão)');
     console.log('- SMTP_PORT:', process.env.SMTP_PORT || '587 (padrão)');
     
@@ -129,12 +130,14 @@ export default async function handler(req, res) {
         const mailOptions = {
             from: `"Aporte Capital" <${process.env.EMAIL_USER}>`,
             to: process.env.RECIPIENT_EMAIL,
+            cc: process.env.CC_EMAIL, // Email em cópia
             subject: `🚀 Nova Solicitação de Aporte - ${empresa || nome}`,
             html: emailHtml
         };
 
         console.log('📧 Tentando enviar email...');
         console.log('📧 Para:', mailOptions.to);
+        console.log('📧 CC:', mailOptions.cc || 'Nenhum');
         console.log('📧 Assunto:', mailOptions.subject);
         
         // Enviar e-mail
