@@ -1451,6 +1451,32 @@ app.get('/api/health', (req, res) => {
 });
 
 /**
+ * Rota de debug para verificar variáveis de ambiente (apenas em produção para debug)
+ */
+app.get('/api/debug/env', (req, res) => {
+    // Só permite acesso se for para debug em produção
+    if (process.env.NODE_ENV !== 'production' && process.env.DEBUG_ENV !== 'true') {
+        return res.status(403).json({ error: 'Acesso negado' });
+    }
+    
+    const envStatus = {
+        NODE_ENV: process.env.NODE_ENV || 'undefined',
+        EMAIL_USER: process.env.EMAIL_USER ? 'Configurado' : 'NÃO CONFIGURADO',
+        EMAIL_PASS: process.env.EMAIL_PASS ? 'Configurado' : 'NÃO CONFIGURADO',
+        RECIPIENT_EMAIL: process.env.RECIPIENT_EMAIL ? 'Configurado' : 'NÃO CONFIGURADO',
+        CC_EMAIL: process.env.CC_EMAIL ? 'Configurado' : 'NÃO CONFIGURADO',
+        SMTP_HOST: process.env.SMTP_HOST || 'Usando padrão: smtp.gmail.com',
+        SMTP_PORT: process.env.SMTP_PORT || 'Usando padrão: 587',
+        SMTP_SECURE: process.env.SMTP_SECURE || 'Usando padrão: false',
+        WHATSAPP_NUMBER: process.env.WHATSAPP_NUMBER ? 'Configurado' : 'Usando padrão',
+        PORT: process.env.PORT || 'Usando padrão: 10000',
+        timestamp: new Date().toISOString()
+    };
+    
+    res.json(envStatus);
+});
+
+/**
  * Rota para exibir página de download de arquivos temporários
  */
 app.get('/download/:linkId', (req, res) => {
