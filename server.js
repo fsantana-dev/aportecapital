@@ -1477,6 +1477,77 @@ app.get('/api/health', (req, res) => {
     });
 });
 
+// Endpoint de teste para formulário (sem envio de email)
+app.post('/api/test-form', upload.array('documentos', 10), async (req, res) => {
+    const requestId = crypto.randomBytes(8).toString('hex');
+    const timestamp = new Date().toISOString();
+    
+    console.log(`\n🧪 [${timestamp}] TESTE DO FORMULÁRIO - ID: ${requestId}`);
+    console.log('📍 Ambiente:', process.env.NODE_ENV || 'development');
+    console.log('🌐 Origin:', req.get('Origin') || 'N/A');
+    
+    try {
+        console.log(`📝 [${requestId}] Testando validação dos dados...`);
+        console.log('📋 Dados recebidos:', req.body);
+        
+        // Valida os dados do formulário
+        const validation = validateFormData(req.body);
+        if (!validation.isValid) {
+            console.log(`❌ [${requestId}] Validação falhou:`, validation.errors);
+            return res.status(400).json({
+                success: false,
+                message: 'Dados inválidos',
+                errors: validation.errors,
+                requestId,
+                timestamp
+            });
+        }
+        
+        console.log(`✅ [${requestId}] Validação OK - Dados válidos`);
+        
+        // Testa consulta CNPJ (sem email)
+        let dadosCNPJ = null;
+        if (req.body.cnpj) {
+            console.log(`🔍 [${requestId}] Testando consulta do CNPJ: ${req.body.cnpj}`);
+            try {
+                dadosCNPJ = await consultarCNPJ(req.body.cnpj);
+                if (dadosCNPJ.success) {
+                    console.log(`✅ [${requestId}] CNPJ consultado com sucesso:`, dadosCNPJ.razaoSocial);
+                } else {
+                    console.log(`⚠️ [${requestId}] Erro na consulta do CNPJ:`, dadosCNPJ.error);
+                }
+            } catch (error) {
+                console.error(`❌ [${requestId}] Erro ao consultar CNPJ:`, error.message);
+                dadosCNPJ = { success: false, error: error.message };
+            }
+        }
+        
+        console.log(`✅ [${requestId}] Teste concluído com sucesso!`);
+        
+        res.json({
+            success: true,
+            message: 'Teste do formulário concluído com sucesso!',
+            validation: 'OK',
+            cnpjTest: dadosCNPJ ? (dadosCNPJ.success ? 'OK' : 'ERRO') : 'NÃO_TESTADO',
+            filesReceived: req.files ? req.files.length : 0,
+            requestId: requestId,
+            timestamp: timestamp
+        });
+        
+    } catch (error) {
+        console.error(`❌ [${requestId}] ERRO no teste:`, error.message);
+        console.error(`❌ [${requestId}] Stack:`, error.stack);
+        
+        res.status(500).json({
+            success: false,
+            message: 'Erro no teste do formulário',
+            error: error.message,
+            requestId: requestId,
+            timestamp: timestamp
+        });
+    }
+});
+
 /**
  * Rota de debug para verificar variáveis de ambiente (apenas em produção para debug)
  */
