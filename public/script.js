@@ -872,16 +872,29 @@ const ConsultoriaModal = {
      * @returns {boolean} - Se o arquivo é válido
      */
     validateFile(file) {
-        const maxSize = 10 * 1024 * 1024; // 10MB
-        const allowedTypes = ['application/pdf'];
+        const maxSize = 50 * 1024 * 1024; // 50MB
+        const maxFiles = 10; // Máximo 10 arquivos
+        const allowedTypes = [
+            'application/pdf',
+            'application/msword', // .doc
+            'application/vnd.openxmlformats-officedocument.wordprocessingml.document' // .docx
+        ];
 
-        if (!allowedTypes.includes(file.type)) {
-            this.showMessage('Apenas arquivos PDF são permitidos.', 'error');
+        // Verifica quantidade máxima de arquivos
+        if (this.uploadedFiles.length >= maxFiles) {
+            this.showMessage(`Máximo de ${maxFiles} arquivos permitidos.`, 'error');
             return false;
         }
 
+        // Verifica tipo de arquivo
+        if (!allowedTypes.includes(file.type)) {
+            this.showMessage('Apenas arquivos PDF, DOC e DOCX são permitidos.', 'error');
+            return false;
+        }
+
+        // Verifica tamanho do arquivo
         if (file.size > maxSize) {
-            this.showMessage('O arquivo deve ter no máximo 10MB.', 'error');
+            this.showMessage('O arquivo deve ter no máximo 50MB.', 'error');
             return false;
         }
 

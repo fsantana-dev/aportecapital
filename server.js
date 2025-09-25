@@ -583,14 +583,20 @@ const storage = multer.diskStorage({
 const upload = multer({
     storage: storage,
     limits: {
-        fileSize: 10 * 1024 * 1024, // 10MB
-        files: 5 // Máximo 5 arquivos
+        fileSize: 50 * 1024 * 1024, // 50MB por arquivo
+        files: 10 // Máximo 10 arquivos
     },
     fileFilter: (req, file, cb) => {
-        if (file.mimetype === 'application/pdf') {
+        const allowedTypes = [
+            'application/pdf',
+            'application/msword', // .doc
+            'application/vnd.openxmlformats-officedocument.wordprocessingml.document' // .docx
+        ];
+        
+        if (allowedTypes.includes(file.mimetype)) {
             cb(null, true);
         } else {
-            cb(new Error('Apenas arquivos PDF são permitidos'), false);
+            cb(new Error('Apenas arquivos PDF, DOC e DOCX são permitidos'), false);
         }
     }
 });
@@ -1758,13 +1764,13 @@ app.use((error, req, res, next) => {
         if (error.code === 'LIMIT_FILE_SIZE') {
             return res.status(400).json({
                 success: false,
-                message: 'Arquivo muito grande. Tamanho máximo: 10MB'
+                message: 'Arquivo muito grande. Tamanho máximo: 50MB'
             });
         }
         if (error.code === 'LIMIT_FILE_COUNT') {
             return res.status(400).json({
                 success: false,
-                message: 'Muitos arquivos. Máximo: 5 arquivos'
+                message: 'Muitos arquivos. Máximo: 10 arquivos'
             });
         }
     }
