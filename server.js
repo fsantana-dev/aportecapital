@@ -2005,15 +2005,35 @@ app.post('/api/consultoria', upload.array('documentos', 10), async (req, res) =>
             attachments: attachments
         };
         
-        // Envia o email
+        // Envia o email com tratamento robusto de erro
         console.log(`📧 [${requestId}] Tentando enviar email principal...`);
         console.log(`📧 [${requestId}] Para: ${mailOptions.to}`);
         console.log(`📧 [${requestId}] CC: ${mailOptions.cc || 'Nenhum'}`);
         console.log(`📧 [${requestId}] Assunto: ${mailOptions.subject}`);
         console.log(`📧 [${requestId}] Anexos: ${attachments.length} arquivo(s)`);
         
-        const emailResult = await transporter.sendMail(mailOptions);
-        console.log(`✅ [${requestId}] Email principal enviado com sucesso! ID: ${emailResult.messageId}`);
+        let emailSent = false;
+        try {
+            const emailResult = await transporter.sendMail(mailOptions);
+            console.log(`✅ [${requestId}] Email principal enviado com sucesso! ID: ${emailResult.messageId}`);
+            emailSent = true;
+        } catch (emailError) {
+            console.error(`❌ [${requestId}] ERRO no envio do email principal:`, emailError.message);
+            console.error(`❌ [${requestId}] Código do erro:`, emailError.code);
+            console.error(`❌ [${requestId}] Stack do erro:`, emailError.stack);
+            
+            // Log detalhado do erro de email
+            if (emailError.code === 'EAUTH') {
+                console.error(`❌ [${requestId}] ERRO DE AUTENTICAÇÃO - Verifique EMAIL_USER e EMAIL_PASS`);
+            } else if (emailError.code === 'ECONNREFUSED') {
+                console.error(`❌ [${requestId}] ERRO DE CONEXÃO - Servidor SMTP não acessível`);
+            } else if (emailError.code === 'ETIMEDOUT') {
+                console.error(`❌ [${requestId}] TIMEOUT - Servidor SMTP demorou para responder`);
+            }
+            
+            // IMPORTANTE: Não interrompe o fluxo - continua sem email
+            console.log(`⚠️ [${requestId}] Continuando processamento sem envio de email...`);
+        }
         
         // Envia email de confirmação automático para o cliente
         console.log(`📧 [${requestId}] Preparando email de confirmação para o cliente...`);
@@ -2071,9 +2091,17 @@ app.post('/api/consultoria', upload.array('documentos', 10), async (req, res) =>
         }
         
         console.log(`🎯 [${requestId}] Enviando resposta de sucesso para o cliente`);
+        
+        // Mensagem personalizada baseada no status do email
+        let responseMessage = 'Solicitação enviada com sucesso! Entraremos em contato em breve.';
+        if (!emailSent) {
+            responseMessage = 'Solicitação recebida com sucesso! Entraremos em contato em breve. (Email será enviado posteriormente)';
+        }
+        
         res.json({
             success: true,
-            message: 'Solicitação enviada com sucesso! Entraremos em contato em breve.',
+            message: responseMessage,
+            emailSent: emailSent,
             whatsappURL: whatsappURLForClient, // Cliente recebe a versão sem link
             whatsappURLForCompany: whatsappURLForCompany, // Para logs/debug da empresa
             downloadLink: downloadLink ? `${req.protocol}://${req.get('host')}/download/${downloadLink}` : null,
