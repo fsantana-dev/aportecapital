@@ -614,7 +614,8 @@ const corsOptions = {
             'http://127.0.0.1:5500',
             'http://localhost:3001',
             'http://localhost:3002',
-            // Produção - adicione aqui o domínio do seu site
+            // Produção - domínios permitidos
+            'https://aportecapital.onrender.com',
             process.env.FRONTEND_URL,
             process.env.DOMAIN_URL
         ].filter(Boolean); // Remove valores undefined/null
@@ -704,7 +705,16 @@ const emailConfig = {
     auth: {
         user: process.env.EMAIL_USER || 'seu-email@gmail.com',
         pass: process.env.EMAIL_PASS || 'sua-senha-de-app'
-    }
+    },
+    // Configurações de timeout para resolver problemas de conexão
+    connectionTimeout: 60000, // 60 segundos para conexão
+    greetingTimeout: 30000,   // 30 segundos para greeting
+    socketTimeout: 60000,     // 60 segundos para socket
+    // Configurações adicionais para estabilidade
+    pool: true,
+    maxConnections: 5,
+    maxMessages: 100,
+    rateLimit: 14 // máximo 14 emails por segundo
 };
 
 const transporter = nodemailer.createTransport(emailConfig);
@@ -720,15 +730,32 @@ console.log('SMTP_PORT:', process.env.SMTP_PORT || 'Usando padrão: 587');
 console.log('SMTP_SECURE:', process.env.SMTP_SECURE || 'Usando padrão: false');
 console.log('=====================================');
 
-// Testar conexão do transporter
-transporter.verify((error, success) => {
-    if (error) {
-        console.error('❌ Erro na configuração do email:', error.message);
-        console.error('Verifique suas credenciais de email no arquivo .env');
-    } else {
-        console.log('✅ Servidor de email configurado corretamente!');
-    }
-});
+// Testar conexão do transporter com timeout personalizado
+const verifyConnection = () => {
+    const verifyTimeout = setTimeout(() => {
+        console.warn('⚠️ Verificação de email demorou mais que 30 segundos - possível problema de conectividade');
+    }, 30000);
+
+    transporter.verify((error, success) => {
+        clearTimeout(verifyTimeout);
+        if (error) {
+            console.error('❌ Erro na configuração do email:', error.message);
+            console.error('Código do erro:', error.code);
+            console.error('Comando:', error.command);
+            if (error.code === 'ECONNECTION' || error.code === 'ETIMEDOUT') {
+                console.error('🔍 Problema de conectividade - verifique firewall e configurações de rede');
+            } else if (error.code === 'EAUTH') {
+                console.error('🔍 Problema de autenticação - verifique EMAIL_USER e EMAIL_PASS');
+            }
+            console.error('Verifique suas credenciais de email no arquivo .env');
+        } else {
+            console.log('✅ Servidor de email configurado corretamente!');
+        }
+    });
+};
+
+// Executar verificação
+verifyConnection();
 
 // ===== FUNÇÕES AUXILIARES =====
 
