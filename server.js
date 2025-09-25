@@ -1564,6 +1564,28 @@ app.post('/api/test-form', upload.array('documentos', 10), async (req, res) => {
     }
 });
 
+// Endpoint super simples para testar apenas recebimento de dados
+app.post('/api/simple-test', (req, res) => {
+    try {
+        console.log('🔍 [SIMPLE-TEST] Dados recebidos:', req.body);
+        
+        res.json({
+            success: true,
+            message: 'Endpoint funcionando perfeitamente',
+            received: req.body,
+            timestamp: new Date().toISOString()
+        });
+        
+    } catch (error) {
+        console.error('❌ [SIMPLE-TEST] Erro:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Erro no endpoint simples',
+            error: error.message
+        });
+    }
+});
+
 /**
  * Rota de debug para verificar variáveis de ambiente (apenas em produção para debug)
  */
