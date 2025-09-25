@@ -1585,7 +1585,7 @@ app.get('/download/:linkId/zip', (req, res) => {
 /**
  * Rota principal para processar o formulário de consultoria
  */
-app.post('/api/consultoria', upload.array('documentos', 5), async (req, res) => {
+app.post('/api/consultoria', upload.array('documentos', 10), async (req, res) => {
     try {
         console.log('Recebendo solicitação de consultoria...');
         console.log('Dados:', req.body);
