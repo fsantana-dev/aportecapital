@@ -1660,14 +1660,30 @@ app.get('/download/:linkId/zip', (req, res) => {
  * Rota principal para processar o formulário de consultoria
  */
 app.post('/api/consultoria', upload.array('documentos', 10), async (req, res) => {
+    const requestId = crypto.randomBytes(8).toString('hex');
+    const timestamp = new Date().toISOString();
+    
+    console.log(`\n🚀 [${timestamp}] INÍCIO DA REQUISIÇÃO - ID: ${requestId}`);
+    console.log('📍 Ambiente:', process.env.NODE_ENV || 'development');
+    console.log('🌐 Origin:', req.get('Origin') || 'N/A');
+    console.log('📱 User-Agent:', req.get('User-Agent') || 'N/A');
+    console.log('🔗 URL completa:', req.originalUrl);
+    console.log('📊 Content-Type:', req.get('Content-Type') || 'N/A');
+    
     try {
-        console.log('Recebendo solicitação de consultoria...');
-        console.log('Dados:', req.body);
-        console.log('Arquivos:', req.files?.map(f => ({ name: f.originalname, size: f.size })));
+        console.log(`📝 [${requestId}] Processando dados do formulário...`);
+        console.log('📋 Dados recebidos:', req.body);
+        console.log('📎 Arquivos recebidos:', req.files?.map(f => ({ 
+            name: f.originalname, 
+            size: f.size,
+            mimetype: f.mimetype 
+        })) || 'Nenhum arquivo');
         
         // Valida os dados do formulário
+        console.log(`🔍 [${requestId}] Iniciando validação dos dados...`);
         const validation = validateFormData(req.body);
         if (!validation.isValid) {
+            console.log(`❌ [${requestId}] Validação falhou:`, validation.errors);
             // Remove arquivos se houver erro de validação
             if (req.files) {
                 cleanupFiles(req.files);
@@ -1676,15 +1692,18 @@ app.post('/api/consultoria', upload.array('documentos', 10), async (req, res) =>
             return res.status(400).json({
                 success: false,
                 message: 'Dados inválidos',
-                errors: validation.errors
+                errors: validation.errors,
+                requestId,
+                timestamp
             });
         }
+        console.log(`✅ [${requestId}] Validação dos dados concluída com sucesso`);
         
         // Consulta dados oficiais do CNPJ e calcula score
         let dadosCNPJ = null;
         let scoreEstimado = null;
         if (req.body.cnpj) {
-            console.log('Iniciando consulta do CNPJ...');
+            console.log(`🔍 [${requestId}] Iniciando consulta do CNPJ: ${req.body.cnpj}`);
             try {
                 dadosCNPJ = await consultarCNPJ(req.body.cnpj);
                 if (dadosCNPJ.success) {
@@ -1724,13 +1743,18 @@ app.post('/api/consultoria', upload.array('documentos', 10), async (req, res) =>
         }
         
         // Gera link temporário para download dos arquivos (se houver)
+        console.log(`📎 [${requestId}] Processando arquivos anexados...`);
         let downloadLink = null;
         if (req.files && req.files.length > 0) {
+            console.log(`📎 [${requestId}] Gerando link temporário para ${req.files.length} arquivo(s)`);
             downloadLink = generateTempLink(req.files, 5, 48); // 5 downloads, 48 horas
-            console.log('Link temporário gerado:', downloadLink);
+            console.log(`📎 [${requestId}] Link temporário gerado: ${downloadLink}`);
+        } else {
+            console.log(`📎 [${requestId}] Nenhum arquivo anexado`);
         }
 
         // Configura o email com dados enriquecidos do CNPJ
+        console.log(`📧 [${requestId}] Configurando email principal...`);
         const subjectSuffix = dadosCNPJ && dadosCNPJ.success ? ` - ${dadosCNPJ.situacao}` : '';
         const mailOptions = {
             from: `"Formulário de Consultoria" <${emailConfig.auth.user}>`,
@@ -1742,15 +1766,17 @@ app.post('/api/consultoria', upload.array('documentos', 10), async (req, res) =>
         };
         
         // Envia o email
-        console.log('📧 Tentando enviar email...');
-        console.log('📧 Para:', mailOptions.to);
-        console.log('📧 CC:', mailOptions.cc || 'Nenhum');
-        console.log('📧 Assunto:', mailOptions.subject);
+        console.log(`📧 [${requestId}] Tentando enviar email principal...`);
+        console.log(`📧 [${requestId}] Para: ${mailOptions.to}`);
+        console.log(`📧 [${requestId}] CC: ${mailOptions.cc || 'Nenhum'}`);
+        console.log(`📧 [${requestId}] Assunto: ${mailOptions.subject}`);
+        console.log(`📧 [${requestId}] Anexos: ${attachments.length} arquivo(s)`);
         
         const emailResult = await transporter.sendMail(mailOptions);
-        console.log('✅ Email enviado com sucesso!', emailResult.messageId);
+        console.log(`✅ [${requestId}] Email principal enviado com sucesso! ID: ${emailResult.messageId}`);
         
         // Envia email de confirmação automático para o cliente
+        console.log(`📧 [${requestId}] Preparando email de confirmação para o cliente...`);
         try {
             const confirmationMailOptions = {
                 from: `"Aporte Capital" <${emailConfig.auth.user}>`,
@@ -1766,15 +1792,17 @@ app.post('/api/consultoria', upload.array('documentos', 10), async (req, res) =>
                 ]
             };
             
-            console.log('📧 Enviando email de confirmação para o cliente...');
+            console.log(`📧 [${requestId}] Enviando email de confirmação para: ${req.body.email}`);
             const confirmationResult = await transporter.sendMail(confirmationMailOptions);
-            console.log('✅ Email de confirmação enviado com sucesso!', confirmationResult.messageId);
+            console.log(`✅ [${requestId}] Email de confirmação enviado com sucesso! ID: ${confirmationResult.messageId}`);
         } catch (confirmationError) {
-            console.error('⚠️ Erro ao enviar email de confirmação (não crítico):', confirmationError.message);
+            console.error(`⚠️ [${requestId}] Erro ao enviar email de confirmação (não crítico):`, confirmationError.message);
+            console.error(`⚠️ [${requestId}] Stack do erro de confirmação:`, confirmationError.stack);
             // Não interrompe o fluxo principal se o email de confirmação falhar
         }
         
         // Gera duas mensagens do WhatsApp diferentes:
+        console.log(`📱 [${requestId}] Gerando mensagens do WhatsApp...`);
         // 1. Para o CLIENTE (sem link de download - mais limpa)
         const whatsappMessageForClient = generateWhatsAppMessageForClient(req.body, req.files);
         const whatsappNumber = process.env.WHATSAPP_NUMBER || '5592999889392';
@@ -1786,52 +1814,61 @@ app.post('/api/consultoria', upload.array('documentos', 10), async (req, res) =>
         
         // NÃO remove arquivos temporários se há link de download
         // Os arquivos serão removidos automaticamente quando o link expirar
+        console.log(`🗂️ [${requestId}] Gerenciando arquivos temporários...`);
         if (!downloadLink && req.files) {
+            console.log(`🗂️ [${requestId}] Removendo arquivos temporários (sem link de download)`);
             cleanupFiles(req.files);
+        } else if (downloadLink) {
+            console.log(`🗂️ [${requestId}] Mantendo arquivos temporários (link de download ativo)`);
         }
         
-        console.log('Email enviado com sucesso!');
-        console.log('Link WhatsApp para CLIENTE gerado:', whatsappURLForClient);
-        console.log('Link WhatsApp para APORTE CAPITAL gerado:', whatsappURLForCompany);
+        console.log(`✅ [${requestId}] Processamento concluído com sucesso!`);
+        console.log(`📱 [${requestId}] Link WhatsApp para CLIENTE gerado`);
+        console.log(`📱 [${requestId}] Link WhatsApp para APORTE CAPITAL gerado`);
         if (downloadLink) {
-            console.log('Link de download disponível:', `${req.protocol}://${req.get('host')}/download/${downloadLink}`);
+            const fullDownloadLink = `${req.protocol}://${req.get('host')}/download/${downloadLink}`;
+            console.log(`📎 [${requestId}] Link de download disponível: ${fullDownloadLink}`);
         }
         
+        console.log(`🎯 [${requestId}] Enviando resposta de sucesso para o cliente`);
         res.json({
             success: true,
             message: 'Solicitação enviada com sucesso! Entraremos em contato em breve.',
             whatsappURL: whatsappURLForClient, // Cliente recebe a versão sem link
             whatsappURLForCompany: whatsappURLForCompany, // Para logs/debug da empresa
             downloadLink: downloadLink ? `${req.protocol}://${req.get('host')}/download/${downloadLink}` : null,
-            hasFiles: req.files && req.files.length > 0
+            hasFiles: req.files && req.files.length > 0,
+            requestId: requestId,
+            timestamp: timestamp
         });
         
     } catch (error) {
-        console.error('❌ ERRO CRÍTICO na rota /api/consultoria:');
-        console.error('❌ Mensagem:', error.message);
-        console.error('❌ Stack trace:', error.stack);
-        console.error('❌ Tipo do erro:', error.name);
-        console.error('❌ Código do erro:', error.code);
-        console.error('❌ Dados recebidos:', JSON.stringify(req.body, null, 2));
-        console.error('❌ Arquivos recebidos:', req.files?.map(f => ({ name: f.originalname, size: f.size })));
-        console.error('❌ Headers:', JSON.stringify(req.headers, null, 2));
-        console.error('❌ URL:', req.url);
-        console.error('❌ Método:', req.method);
-        console.error('❌ IP:', req.ip);
-        console.error('❌ User-Agent:', req.get('User-Agent'));
+        console.error(`❌ [${requestId}] ERRO CRÍTICO na rota /api/consultoria:`);
+        console.error(`❌ [${requestId}] Mensagem:`, error.message);
+        console.error(`❌ [${requestId}] Stack trace:`, error.stack);
+        console.error(`❌ [${requestId}] Tipo do erro:`, error.name);
+        console.error(`❌ [${requestId}] Código do erro:`, error.code);
+        console.error(`❌ [${requestId}] Dados recebidos:`, JSON.stringify(req.body, null, 2));
+        console.error(`❌ [${requestId}] Arquivos recebidos:`, req.files?.map(f => ({ name: f.originalname, size: f.size })));
+        console.error(`❌ [${requestId}] Headers:`, JSON.stringify(req.headers, null, 2));
+        console.error(`❌ [${requestId}] URL:`, req.url);
+        console.error(`❌ [${requestId}] Método:`, req.method);
+        console.error(`❌ [${requestId}] IP:`, req.ip);
+        console.error(`❌ [${requestId}] User-Agent:`, req.get('User-Agent'));
         
         // Verifica se é erro de configuração de email
         if (error.message && error.message.includes('Invalid login')) {
-            console.error('❌ ERRO DE AUTENTICAÇÃO DE EMAIL - Verifique EMAIL_USER e EMAIL_PASS');
+            console.error(`❌ [${requestId}] ERRO DE AUTENTICAÇÃO DE EMAIL - Verifique EMAIL_USER e EMAIL_PASS`);
         }
         
         // Verifica se é erro de SMTP
         if (error.code === 'ECONNREFUSED' || error.code === 'ENOTFOUND') {
-            console.error('❌ ERRO DE CONEXÃO SMTP - Verifique SMTP_HOST e SMTP_PORT');
+            console.error(`❌ [${requestId}] ERRO DE CONEXÃO SMTP - Verifique SMTP_HOST e SMTP_PORT`);
         }
         
         // Remove arquivos em caso de erro
         if (req.files) {
+            console.log(`🗂️ [${requestId}] Removendo arquivos devido ao erro`);
             cleanupFiles(req.files);
         }
         
@@ -1839,8 +1876,8 @@ app.post('/api/consultoria', upload.array('documentos', 10), async (req, res) =>
         const errorResponse = {
             success: false,
             message: 'Erro interno do servidor. Tente novamente mais tarde.',
-            timestamp: new Date().toISOString(),
-            requestId: crypto.randomBytes(8).toString('hex')
+            timestamp: timestamp,
+            requestId: requestId
         };
         
         // Adiciona detalhes do erro apenas em desenvolvimento ou para debug
@@ -1850,6 +1887,7 @@ app.post('/api/consultoria', upload.array('documentos', 10), async (req, res) =>
             errorResponse.errorCode = error.code;
         }
         
+        console.error(`❌ [${requestId}] Enviando resposta de erro 500`);
         res.status(500).json(errorResponse);
     }
 });
