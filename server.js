@@ -730,32 +730,48 @@ console.log('SMTP_PORT:', process.env.SMTP_PORT || 'Usando padrão: 587');
 console.log('SMTP_SECURE:', process.env.SMTP_SECURE || 'Usando padrão: false');
 console.log('=====================================');
 
-// Testar conexão do transporter com timeout personalizado
-const verifyConnection = () => {
-    const verifyTimeout = setTimeout(() => {
-        console.warn('⚠️ Verificação de email demorou mais que 30 segundos - possível problema de conectividade');
-    }, 30000);
-
-    transporter.verify((error, success) => {
-        clearTimeout(verifyTimeout);
-        if (error) {
-            console.error('❌ Erro na configuração do email:', error.message);
-            console.error('Código do erro:', error.code);
-            console.error('Comando:', error.command);
-            if (error.code === 'ECONNECTION' || error.code === 'ETIMEDOUT') {
-                console.error('🔍 Problema de conectividade - verifique firewall e configurações de rede');
-            } else if (error.code === 'EAUTH') {
-                console.error('🔍 Problema de autenticação - verifique EMAIL_USER e EMAIL_PASS');
-            }
-            console.error('Verifique suas credenciais de email no arquivo .env');
-        } else {
-            console.log('✅ Servidor de email configurado corretamente!');
+// Testar conexão do transporter de forma assíncrona e não-bloqueante
+const verifyConnection = async () => {
+    try {
+        console.log('🔍 Iniciando verificação assíncrona do servidor de email...');
+        
+        // Usar Promise com timeout para não bloquear o servidor
+        const verifyPromise = new Promise((resolve, reject) => {
+            transporter.verify((error, success) => {
+                if (error) {
+                    reject(error);
+                } else {
+                    resolve(success);
+                }
+            });
+        });
+        
+        // Timeout de 10 segundos para a verificação
+        const timeoutPromise = new Promise((_, reject) => {
+            setTimeout(() => reject(new Error('Timeout na verificação de email')), 10000);
+        });
+        
+        await Promise.race([verifyPromise, timeoutPromise]);
+        console.log('✅ Servidor de email configurado corretamente!');
+        
+    } catch (error) {
+        console.warn('⚠️ Aviso na configuração do email (não crítico):', error.message);
+        console.warn('Código do erro:', error.code);
+        if (error.code === 'ECONNECTION' || error.code === 'ETIMEDOUT') {
+            console.warn('🔍 Problema de conectividade - verifique firewall e configurações de rede');
+        } else if (error.code === 'EAUTH') {
+            console.warn('🔍 Problema de autenticação - verifique EMAIL_USER e EMAIL_PASS');
         }
-    });
+        console.warn('⚠️ O servidor continuará funcionando, mas emails podem falhar');
+    }
 };
 
-// Executar verificação
-verifyConnection();
+// Executar verificação de forma não-bloqueante
+setTimeout(() => {
+    verifyConnection().catch(err => {
+        console.warn('⚠️ Verificação de email falhou (não crítico):', err.message);
+    });
+}, 1000); // Aguarda 1 segundo após inicialização
 
 // ===== FUNÇÕES AUXILIARES =====
 
