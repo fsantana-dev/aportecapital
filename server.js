@@ -1586,6 +1586,84 @@ app.post('/api/simple-test', (req, res) => {
     }
 });
 
+// Endpoint de consultoria SEM EMAIL para debug
+app.post('/api/consultoria-no-email', upload.array('documentos', 10), async (req, res) => {
+    const requestId = crypto.randomBytes(8).toString('hex');
+    const timestamp = new Date().toISOString();
+    
+    console.log(`\n🚀 [${timestamp}] CONSULTORIA SEM EMAIL - ID: ${requestId}`);
+    
+    try {
+        console.log(`📝 [${requestId}] Processando dados do formulário...`);
+        console.log('📋 Dados recebidos:', req.body);
+        
+        // Valida os dados do formulário
+        console.log(`🔍 [${requestId}] Iniciando validação dos dados...`);
+        const validation = validateFormData(req.body);
+        if (!validation.isValid) {
+            console.log(`❌ [${requestId}] Validação falhou:`, validation.errors);
+            if (req.files) {
+                cleanupFiles(req.files);
+            }
+            
+            return res.status(400).json({
+                success: false,
+                message: 'Dados inválidos',
+                errors: validation.errors,
+                requestId,
+                timestamp
+            });
+        }
+
+        console.log(`✅ [${requestId}] Validação concluída com sucesso`);
+
+        // Consulta CNPJ se fornecido
+        let cnpjData = null;
+        if (req.body.cnpj && req.body.cnpj.trim()) {
+            try {
+                console.log(`🔍 [${requestId}] Consultando CNPJ: ${req.body.cnpj}`);
+                cnpjData = await consultarCNPJ(req.body.cnpj);
+                console.log(`✅ [${requestId}] CNPJ consultado com sucesso`);
+            } catch (cnpjError) {
+                console.log(`⚠️ [${requestId}] Erro na consulta CNPJ (não crítico):`, cnpjError.message);
+            }
+        }
+
+        // PULA O ENVIO DE EMAIL - apenas simula sucesso
+        console.log(`📧 [${requestId}] SIMULANDO envio de email (pulado para debug)`);
+        
+        // Cleanup de arquivos se houver
+        if (req.files && req.files.length > 0) {
+            console.log(`🧹 [${requestId}] Limpando arquivos temporários...`);
+            cleanupFiles(req.files);
+        }
+
+        console.log(`✅ [${requestId}] Processamento concluído com sucesso (SEM EMAIL)`);
+        
+        res.json({
+            success: true,
+            message: 'Formulário processado com sucesso (sem email para debug)',
+            requestId,
+            timestamp,
+            cnpjData: cnpjData ? 'Consultado com sucesso' : 'Não consultado'
+        });
+
+    } catch (error) {
+        console.error(`💥 [${requestId}] Erro no processamento:`, error);
+        
+        if (req.files) {
+            cleanupFiles(req.files);
+        }
+        
+        res.status(500).json({
+            success: false,
+            message: 'Erro interno do servidor. Tente novamente mais tarde.',
+            requestId,
+            timestamp
+        });
+    }
+});
+
 /**
  * Rota de debug para verificar variáveis de ambiente (apenas em produção para debug)
  */
