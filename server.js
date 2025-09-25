@@ -602,12 +602,52 @@ const upload = multer({
 });
 
 // ===== MIDDLEWARES =====
-app.use(cors({
-    origin: ['http://localhost:3000', 'http://127.0.0.1:3000', 'http://localhost:5500', 'http://127.0.0.1:5500', 'http://localhost:3001', 'http://localhost:3002'],
+// Configuração dinâmica do CORS baseada no ambiente
+const corsOptions = {
+    origin: function (origin, callback) {
+        // Lista de origens permitidas
+        const allowedOrigins = [
+            // Desenvolvimento local
+            'http://localhost:3000',
+            'http://127.0.0.1:3000',
+            'http://localhost:5500',
+            'http://127.0.0.1:5500',
+            'http://localhost:3001',
+            'http://localhost:3002',
+            // Produção - adicione aqui o domínio do seu site
+            process.env.FRONTEND_URL,
+            process.env.DOMAIN_URL
+        ].filter(Boolean); // Remove valores undefined/null
+        
+        // Em desenvolvimento, permite qualquer origem
+        if (process.env.NODE_ENV !== 'production') {
+            return callback(null, true);
+        }
+        
+        // Em produção, verifica se a origem está na lista permitida
+        if (!origin || allowedOrigins.includes(origin)) {
+            callback(null, true);
+        } else {
+            console.warn(`❌ CORS: Origem não permitida: ${origin}`);
+            callback(new Error('Não permitido pelo CORS'));
+        }
+    },
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization']
-}));
+    allowedHeaders: [
+        'Content-Type', 
+        'Authorization', 
+        'X-Requested-With',
+        'Accept',
+        'Origin',
+        'Cache-Control',
+        'X-File-Name'
+    ],
+    exposedHeaders: ['Content-Length', 'X-Foo', 'X-Bar'],
+    maxAge: 86400 // Cache preflight por 24 horas
+};
+
+app.use(cors(corsOptions));
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -616,6 +656,40 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, 'public')));
 
 // ===== CONFIGURAÇÃO DE EMAIL =====
+// Validação de variáveis de ambiente críticas
+function validateEnvironmentVariables() {
+    const requiredVars = [
+        'EMAIL_USER',
+        'EMAIL_PASS',
+        'RECIPIENT_EMAIL'
+    ];
+    
+    const missingVars = requiredVars.filter(varName => !process.env[varName]);
+    
+    if (missingVars.length > 0) {
+        console.error('❌ ERRO CRÍTICO: Variáveis de ambiente obrigatórias não configuradas:');
+        missingVars.forEach(varName => {
+            console.error(`   - ${varName}`);
+        });
+        console.error('');
+        console.error('Configure essas variáveis no seu provedor de hospedagem (Render, Vercel, etc.)');
+        console.error('Consulte o arquivo .env.example para referência');
+        
+        // Em produção, não para o servidor, apenas avisa
+        if (process.env.NODE_ENV === 'production') {
+            console.error('⚠️ SERVIDOR CONTINUARÁ RODANDO, MAS EMAILS PODEM FALHAR');
+        } else {
+            console.error('❌ Parando servidor em desenvolvimento...');
+            process.exit(1);
+        }
+    } else {
+        console.log('✅ Todas as variáveis de ambiente críticas estão configuradas');
+    }
+}
+
+// Executa validação
+validateEnvironmentVariables();
+
 /**
  * Configuração do transporter de email
  * Para usar Gmail:
@@ -1733,26 +1807,50 @@ app.post('/api/consultoria', upload.array('documentos', 10), async (req, res) =>
         });
         
     } catch (error) {
-        console.error('❌ Erro ao processar solicitação:', error);
+        console.error('❌ ERRO CRÍTICO na rota /api/consultoria:');
+        console.error('❌ Mensagem:', error.message);
         console.error('❌ Stack trace:', error.stack);
         console.error('❌ Tipo do erro:', error.name);
         console.error('❌ Código do erro:', error.code);
+        console.error('❌ Dados recebidos:', JSON.stringify(req.body, null, 2));
+        console.error('❌ Arquivos recebidos:', req.files?.map(f => ({ name: f.originalname, size: f.size })));
+        console.error('❌ Headers:', JSON.stringify(req.headers, null, 2));
+        console.error('❌ URL:', req.url);
+        console.error('❌ Método:', req.method);
+        console.error('❌ IP:', req.ip);
+        console.error('❌ User-Agent:', req.get('User-Agent'));
+        
+        // Verifica se é erro de configuração de email
+        if (error.message && error.message.includes('Invalid login')) {
+            console.error('❌ ERRO DE AUTENTICAÇÃO DE EMAIL - Verifique EMAIL_USER e EMAIL_PASS');
+        }
+        
+        // Verifica se é erro de SMTP
+        if (error.code === 'ECONNREFUSED' || error.code === 'ENOTFOUND') {
+            console.error('❌ ERRO DE CONEXÃO SMTP - Verifique SMTP_HOST e SMTP_PORT');
+        }
         
         // Remove arquivos em caso de erro
         if (req.files) {
             cleanupFiles(req.files);
         }
         
-        res.status(500).json({
+        // Resposta mais detalhada para debug em produção
+        const errorResponse = {
             success: false,
             message: 'Erro interno do servidor. Tente novamente mais tarde.',
-            error: process.env.NODE_ENV === 'development' ? error.message : undefined,
-            errorDetails: process.env.NODE_ENV === 'production' ? {
-                name: error.name,
-                code: error.code,
-                message: error.message
-            } : undefined
-        });
+            timestamp: new Date().toISOString(),
+            requestId: crypto.randomBytes(8).toString('hex')
+        };
+        
+        // Adiciona detalhes do erro apenas em desenvolvimento ou para debug
+        if (process.env.NODE_ENV === 'development' || process.env.DEBUG_ERRORS === 'true') {
+            errorResponse.error = error.message;
+            errorResponse.errorType = error.name;
+            errorResponse.errorCode = error.code;
+        }
+        
+        res.status(500).json(errorResponse);
     }
 });
 
